@@ -18,16 +18,24 @@ type
   TestTxnGridLinkSort = class(TTestCase)
   strict private
     fGridLinkSort: TxnGridLinkSort;
+    fGridSortItems: TxnGridSortItems;
   public
     procedure SetUp; override;
     procedure TearDown; override;
   published
-    procedure TestRowCount;
-    procedure TestValue_0_0;
-    procedure TestValue_3_15;
+    procedure Test_RowCount;
+    procedure Test_Value_0_0;
+    procedure Test_Value_3_15;
 
-    procedure TestAsDebugNoFilterNoSort_Ok;
-    procedure TestSortCol0Desc_Ok;
+    procedure Test_AsDebug_NoFilter_NoSort_Ok;
+    procedure Test_Sort_Col0StrAsc_Ok;
+    procedure Test_Sort_Col0StrDesc_Ok;
+    procedure Test_Sort_Col0NumAsc_Ok;
+    procedure Test_Sort_Col0NumDesc_Ok;
+
+    procedure Test_Sort_Col2StrAsc_Col0NumDesc_Ok;
+    procedure Test_Sort_Col3NumAsc_Col4NumDesc_Ok;
+
   end;
 
 implementation
@@ -35,45 +43,77 @@ implementation
 procedure TestTxnGridLinkSort.SetUp;
 begin
   fGridLinkSort := TxnGridLinkSort.Create;
+  fGridSortItems := TxnGridSortItems.Create;
 end;
 
 procedure TestTxnGridLinkSort.TearDown;
 begin
+  fGridSortItems.Free;
+  fGridSortItems := nil;
   fGridLinkSort.Free;
   fGridLinkSort := nil;
 end;
 
-procedure TestTxnGridLinkSort.TestAsDebugNoFilterNoSort_Ok;
+procedure TestTxnGridLinkSort.Test_AsDebug_NoFilter_NoSort_Ok;
 begin
   CheckEquals('0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,', fGridLinkSort.AsDebug);
 end;
 
-procedure TestTxnGridLinkSort.TestRowCount;
+procedure TestTxnGridLinkSort.Test_RowCount;
 begin
   CheckEquals(20, fGridLinkSort.RowCount);
 end;
 
-procedure TestTxnGridLinkSort.TestSortCol0Desc_Ok;
-var
-  si: TxnGridSortItems;
+procedure TestTxnGridLinkSort.Test_Sort_Col0NumAsc_Ok;
 begin
-  si := TxnGridSortItems.Create;
-  try
-    si.Add(TxnGridSortItem.Create(1, xstDesc));
-
-    fGridLinkSort.Ordina(si);
-    CheckEquals('0,1,10,11,12,13,14,15,16,17,18,19,2,3,4,5,6,7,8,9,', fGridLinkSort.AsDebug);
-  finally
-    si.Free;
-  end;
+  fGridSortItems.Add(TxnGridSortItem.Create(0, xstNumAsc));
+  fGridLinkSort.Sort(fGridSortItems);
+  CheckEquals('0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,', fGridLinkSort.AsDebug);
 end;
 
-procedure TestTxnGridLinkSort.TestValue_0_0;
+procedure TestTxnGridLinkSort.Test_Sort_Col0NumDesc_Ok;
+begin
+  fGridSortItems.Add(TxnGridSortItem.Create(0, xstNumDesc));
+  fGridLinkSort.Sort(fGridSortItems);
+  CheckEquals('19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0,', fGridLinkSort.AsDebug);
+end;
+
+procedure TestTxnGridLinkSort.Test_Sort_Col0StrAsc_Ok;
+begin
+  fGridSortItems.Add(TxnGridSortItem.Create(0, xstStrAsc));
+  fGridLinkSort.Sort(fGridSortItems);
+  CheckEquals('0,1,10,11,12,13,14,15,16,17,18,19,2,3,4,5,6,7,8,9,', fGridLinkSort.AsDebug);
+end;
+
+procedure TestTxnGridLinkSort.Test_Sort_Col0StrDesc_Ok;
+begin
+  fGridSortItems.Add(TxnGridSortItem.Create(0, xstStrDesc));
+  fGridLinkSort.Sort(fGridSortItems);
+  CheckEquals('9,8,7,6,5,4,3,2,19,18,17,16,15,14,13,12,11,10,1,0,', fGridLinkSort.AsDebug);
+end;
+
+procedure TestTxnGridLinkSort.Test_Sort_Col2StrAsc_Col0NumDesc_Ok;
+begin
+  fGridSortItems.Add(TxnGridSortItem.Create(2, xstStrAsc));
+  fGridSortItems.Add(TxnGridSortItem.Create(0, xstNumDesc));
+  fGridLinkSort.Sort(fGridSortItems);
+  CheckEquals('15,17,19,6,4,1,0,13,16,14,3,18,5,10,12,7,9,8,2,11,', fGridLinkSort.AsDebug);
+end;
+
+procedure TestTxnGridLinkSort.Test_Sort_Col3NumAsc_Col4NumDesc_Ok;
+begin
+  fGridSortItems.Add(TxnGridSortItem.Create(3, xstNumAsc));
+  fGridSortItems.Add(TxnGridSortItem.Create(0, xstNumDesc));
+  fGridLinkSort.Sort(fGridSortItems);
+  CheckEquals('10,0,5,3,19,11,6,4,7,13,9,8,14,18,15,1,17,16,12,2,', fGridLinkSort.AsDebug);
+end;
+
+procedure TestTxnGridLinkSort.Test_Value_0_0;
 begin
   CheckEquals('0', fGridLinkSort.ValueString(0, 0));
 end;
 
-procedure TestTxnGridLinkSort.TestValue_3_15;
+procedure TestTxnGridLinkSort.Test_Value_3_15;
 begin
   CheckEquals('3,76', fGridLinkSort.ValueString(3, 15));
 end;
