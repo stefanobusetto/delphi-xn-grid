@@ -98,6 +98,7 @@ end;
 procedure TFormMain.bt_createClick(Sender: TObject);
 begin
   TableCreate('TABLE_20', 20);
+
   // TableCreate('TABLE_200', 200);
   // TableCreate('TABLE_2000', 2000);
 end;

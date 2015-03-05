@@ -2,37 +2,57 @@ unit xn.grid.sort;
 
 interface
 
-uses Generics.Collections,
-  xn.grid.link, cSampleData;
+uses Generics.Collections, xn.grid.link;
 
 type
   TxnGridSortItem = record
   type
-    TKind = (xstStrAsc, xstStrDesc, xstNumAsc, xstNumDesc);
+    TKind = (gskStr, gskNum);
+    TOrder = (gsoAsc, gsoDesc);
   private
-    fItem: integer;
+    fIndex: integer;
     fKind: TKind;
+    fOrder: TOrder;
   public
-    constructor Create(aIndex: integer; aKind: TKind);
+    constructor Create(aIndex: integer; aKind: TKind; aOrder: TOrder);
   end;
 
   TxnGridSortItems = class(TList<TxnGridSortItem>)
   end;
 
+  TxnGridFilterItem = record
+  type
+    TCriteria = (gfcEquals, gfcStartsWith, gfcEndsWith);
+    TCase = (gfcCaseSensitive, gfcCaseInsensitive);
+  private
+    fIndex: integer;
+    fCriteria: TCriteria;
+    fCase: TCase;
+  public
+    constructor Create(aIndex: integer; aCriteria: TCriteria; aCase: TCase);
+  end;
+
+  TxnGridFilterItems = class(TList<TxnGridFilterItem>)
+  end;
+
   TxnGridLinkSort = class(TInterfacedObject, IxnGridData)
   strict private
-    fItems: TxnGridSortItems;
-    fIndex: TList<integer>;
+    fGridData: IxnGridData;
+
+    fSortItems: TxnGridSortItems;
+    fFilterItems: TxnGridFilterItems;
+
+    fHashTable: TList<integer>;
 
     function Comparer(const aLeft, aRight: TArray<variant>): integer;
     function Getter(const aIndex: integer): TArray<variant>;
 
-    procedure QuickSort(aLo, aHi: integer); overload;
-    procedure QuickSort; overload;
+    procedure DoSort(aStart, aStop: integer); overload;
+    procedure DoSort; overload;
   public
-    constructor Create;
+    constructor Create(aGridData: IxnGridData);
     destructor Destroy; override;
-    procedure sort(aItems: TxnGridSortItems); overload;
+    procedure sort(aSortItems: TxnGridSortItems); overload;
     function RowCount: LongInt;
 
     function AsDebug: string;
@@ -57,48 +77,41 @@ end;
 
 function TxnGridLinkSort.RowCount: LongInt;
 begin
-  Result := TSampleData.Length
+  Result := fGridData.RowCount
 end;
 
-procedure TxnGridLinkSort.QuickSort(aLo, aHi: integer);
+procedure TxnGridLinkSort.DoSort(aStart, aStop: integer);
 var
-  iLo: integer;
-  iHi: integer;
+  iStart: integer;
+  iStop: integer;
   iPivot: TArray<variant>;
-
-  function Get(aIndex: integer): TArray<variant>;
-  begin
-    // Result := fGetter(aData[aIndex])
-    Result := Getter(aIndex)
-  end;
-
 begin
-  iLo := aLo;
-  iHi := aHi;
-  iPivot := Get((iLo + iHi) div 2);
+  iStart := aStart;
+  iStop := aStop;
+  iPivot := Getter((iStart + iStop) div 2);
   repeat
-    while (Comparer(Get(iLo), iPivot) < 0) do
-      Inc(iLo);
-    while (Comparer(Get(iHi), iPivot) > 0) do
-      Dec(iHi);
+    while (Comparer(Getter(iStart), iPivot) < 0) do
+      Inc(iStart);
+    while (Comparer(Getter(iStop), iPivot) > 0) do
+      Dec(iStop);
 
-    if iLo <= iHi then
+    if iStart <= iStop then
     begin
-      fIndex.Exchange(iLo, iHi);
-      Inc(iLo);
-      Dec(iHi);
+      fHashTable.Exchange(iStart, iStop);
+      Inc(iStart);
+      Dec(iStop);
     end;
-  until iLo > iHi;
+  until iStart > iStop;
 
-  if iHi > aLo then
-    QuickSort(aLo, iHi);
-  if iLo < aHi then
-    QuickSort(iLo, aHi);
+  if iStop > aStart then
+    DoSort(aStart, iStop);
+  if iStart < aStop then
+    DoSort(iStart, aStop);
 end;
 
-procedure TxnGridLinkSort.QuickSort;
+procedure TxnGridLinkSort.DoSort;
 begin
-  QuickSort(0, fIndex.Count - 1);
+  DoSort(0, fHashTable.Count - 1);
 end;
 
 function TxnGridLinkSort.Comparer(const aLeft, aRight: TArray<variant>): integer;
@@ -113,8 +126,7 @@ begin
     l := aLeft[i];
     r := aRight[i];
 
-    if (fItems[i].fKind = xstStrDesc) or
-      (fItems[i].fKind = xstNumDesc) then
+    if (fSortItems[i].fOrder = gsoDesc) then
     begin
       t := l;
       l := r;
@@ -129,18 +141,20 @@ begin
   exit(0);
 end;
 
-constructor TxnGridLinkSort.Create;
+constructor TxnGridLinkSort.Create(aGridData: IxnGridData);
 var
   i: integer;
 begin
-  fIndex := TList<integer>.Create;
-  for i := 0 to RowCount - 1 do
-    fIndex.Add(i);
+  fGridData := aGridData;
+
+  fHashTable := TList<integer>.Create;
+  for i := 0 to aGridData.RowCount - 1 do
+    fHashTable.Add(i);
 end;
 
 destructor TxnGridLinkSort.Destroy;
 begin
-  fIndex.Free;
+  fHashTable.Free;
   inherited;
 end;
 
@@ -148,43 +162,50 @@ function TxnGridLinkSort.Getter(const aIndex: integer): TArray<variant>;
 var
   i: integer;
 begin
-  SetLength(Result, fItems.Count);
+  SetLength(Result, fSortItems.Count);
 
-  for i := 0 to fItems.Count - 1 do
-    if (fItems[i].fKind = xstStrAsc) or
-      (fItems[i].fKind = xstStrDesc) then
-      Result[i] := ValueString(fItems[i].fItem, aIndex)
+  for i := 0 to fSortItems.Count - 1 do
+    if (fSortItems[i].fKind = gskStr) then
+      Result[i] := ValueString(fSortItems[i].fIndex, aIndex)
     else
-      Result[i] := ValueFloat(fItems[i].fItem, aIndex)
+      Result[i] := ValueFloat(fSortItems[i].fIndex, aIndex)
 end;
 
-procedure TxnGridLinkSort.sort(aItems: TxnGridSortItems);
+procedure TxnGridLinkSort.sort(aSortItems: TxnGridSortItems);
 begin
-  fItems := aItems;
+  fSortItems := aSortItems;
 
-  if fIndex.Count > 0 then
-    if aItems.Count > 0 then
-      QuickSort(0, fIndex.Count - 1);
+  if fHashTable.Count > 0 then
+    if aSortItems.Count > 0 then
+      DoSort(0, fHashTable.Count - 1);
 end;
 
 function TxnGridLinkSort.ValueFloat(aCol, aRow: integer): Double;
 begin
-  Result := StrToFloat(ValueString(aCol, aRow));
+  Result := fGridData.ValueFloat(aCol, fHashTable[aRow]);
 end;
 
 function TxnGridLinkSort.ValueString(aCol, aRow: integer): String;
 begin
-  Result := TSampleData.Value(aCol, fIndex[aRow]);
+  Result := fGridData.ValueString(aCol, fHashTable[aRow]);
 end;
 
 { TxnGridSortItem }
 
-constructor TxnGridSortItem.Create(aIndex: integer; aKind: TKind);
+constructor TxnGridSortItem.Create(aIndex: integer; aKind: TKind; aOrder: TOrder);
 begin
-  fItem := aIndex;
+  fIndex := aIndex;
   fKind := aKind;
+  fOrder := aOrder;
 end;
 
-{ TxnSort }
+{ TxnGridFilterItem }
+
+constructor TxnGridFilterItem.Create(aIndex: integer; aCriteria: TCriteria; aCase: TCase);
+begin
+  fIndex := aIndex;
+  fCriteria := aCriteria;
+  fCase := aCase;
+end;
 
 end.
