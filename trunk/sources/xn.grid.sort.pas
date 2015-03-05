@@ -10,7 +10,7 @@ type
   type
     TKind = (xstAsc, xstDesc);
   private
-    fIndex: integer;
+    fItem: integer;
     fKind: TKind;
   public
     constructor Create(aIndex: integer; aKind: TKind);
@@ -28,7 +28,8 @@ type
     procedure Ordina(aItems: TxnGridSortItems);
     function RowCount: LongInt;
     function AsDebug: string;
-    function Value(aCol, aRow: LongInt): String;
+    function ValueString(aCol, aRow: LongInt): String;
+    function ValueFloat(aCol, aRow: LongInt): Double;
   end;
 
 implementation
@@ -43,7 +44,7 @@ var
 begin
   Result := '';
   for r := 0 to RowCount - 1 do
-    Result := Result + Value(0, r) + ','
+    Result := Result + ValueString(0, r) + ','
 end;
 
 function TxnGridLinkSort.RowCount: LongInt;
@@ -75,22 +76,32 @@ begin
     var
       l: string;
       r: string;
+      i: integer;
     begin
-      l := Value(0, Left);
-      r := Value(0, Right);
-
-      if l < r then
-        Result := -1
-      else if r > l then
-        Result := +1
-      else
+      // for i := 0 to aItems.Count - 1 do
+      //i := 0;
+      // begin
+      l := 'ss' ;//ValueString(2, Left);
+      r := 'ss' ;//ValueString(2, Right);
+//      if l < r then
+//        Result := -1
+//      else if r > l then
+//        Result := +1
+//      else
         Result := 0;
+      // end;
     end;
 
-  fIndex.sort(TComparer<integer>.Construct(c));
+//  if aItems.Count > 0 then
+    fIndex.sort(TComparer<integer>.Construct(c));
 end;
 
-function TxnGridLinkSort.Value(aCol, aRow: integer): String;
+function TxnGridLinkSort.ValueFloat(aCol, aRow: integer): Double;
+begin
+  Result := StrToFloat(ValueString(aCol, aRow));
+end;
+
+function TxnGridLinkSort.ValueString(aCol, aRow: integer): String;
 begin
   Result := TSampleData.Value(aCol, fIndex[aRow]);
 end;
@@ -99,7 +110,7 @@ end;
 
 constructor TxnGridSortItem.Create(aIndex: integer; aKind: TKind);
 begin
-  fIndex := aIndex;
+  fItem := aIndex;
   fKind := aKind;
 end;
 

@@ -7,7 +7,8 @@ type
     ['{D88DE50E-5A96-4955-B8C3-DD321FB97458}']
     function RowCount: LongInt;
     function AsDebug: string;
-    function Value(aCol, aRow: LongInt): String;
+    function ValueString(aCol, aRow: LongInt): String;
+    function ValueFloat(aCol, aRow: LongInt): Double;
   end;
 
   IxnGridLink = interface(IxnGridData)

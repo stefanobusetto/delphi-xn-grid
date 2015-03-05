@@ -1,0 +1,60 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{2BE458AF-CAAD-4593-9203-8E26BD4F7AFA}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="extras\SampleData\SampleData.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="sources\xnGrid.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="sources\xnGridSortTest\xnGridSortTest.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="SampleData">
+        <MSBuild Projects="extras\SampleData\SampleData.dproj"/>
+    </Target>
+    <Target Name="SampleData:Clean">
+        <MSBuild Projects="extras\SampleData\SampleData.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="SampleData:Make">
+        <MSBuild Projects="extras\SampleData\SampleData.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="xnGrid">
+        <MSBuild Projects="sources\xnGrid.dproj"/>
+    </Target>
+    <Target Name="xnGrid:Clean">
+        <MSBuild Projects="sources\xnGrid.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="xnGrid:Make">
+        <MSBuild Projects="sources\xnGrid.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="xnGridSortTest">
+        <MSBuild Projects="sources\xnGridSortTest\xnGridSortTest.dproj"/>
+    </Target>
+    <Target Name="xnGridSortTest:Clean">
+        <MSBuild Projects="sources\xnGridSortTest\xnGridSortTest.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="xnGridSortTest:Make">
+        <MSBuild Projects="sources\xnGridSortTest\xnGridSortTest.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="SampleData;xnGrid;xnGridSortTest"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="SampleData:Clean;xnGrid:Clean;xnGridSortTest:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="SampleData:Make;xnGrid:Make;xnGridSortTest:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

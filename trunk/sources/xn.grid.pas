@@ -22,7 +22,9 @@ type
     procedure Delete(aIndex: integer);
 
     function RowCount: LongInt;
-    function Value(aCol, aRow: LongInt): String;
+    function AsDebug: string;
+    function ValueString(aCol, aRow: LongInt): String;
+    function ValueFloat(aCol, aRow: LongInt): Double;
   end;
 
   TxnGridColumnNotify = procedure(aIndex: integer) of object;
@@ -224,7 +226,7 @@ var
   v: string;
   f: Cardinal;
 begin
-  v := fLink.Value(aCol, aRow);
+  v := fLink.ValueString(aCol, aRow);
 
   if True then
     f := DT_WORDBREAK
@@ -370,6 +372,11 @@ begin
   fGrid.OnRowDelete(aIndex);
 end;
 
+function TxnGridLink.AsDebug: string;
+begin
+  raise Exception.Create('TxnGridLink.AsDebug');
+end;
+
 procedure TxnGridLink.Change(aIndex: integer; aString: string);
 begin
   fItems[aIndex] := aString;
@@ -396,7 +403,12 @@ begin
   Result := fItems.Count;
 end;
 
-function TxnGridLink.Value(aCol, aRow: LongInt): String;
+function TxnGridLink.ValueFloat(aCol, aRow: integer): Double;
+begin
+  Result := StrToFloat(ValueString(aCol, aRow));
+end;
+
+function TxnGridLink.ValueString(aCol, aRow: LongInt): String;
 begin
   if aRow < 0 then
     Exit('');

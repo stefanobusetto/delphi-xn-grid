@@ -87,7 +87,6 @@
             <Form>FormMain</Form>
             <FormType>dfm</FormType>
         </DCCReference>
-        <DCCReference Include="cSampleData.pas"/>
         <DCCReference Include="..\..\sources\xn.grid.link.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>

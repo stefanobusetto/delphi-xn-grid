@@ -3,7 +3,6 @@ program SampleData;
 uses
   Vcl.Forms,
   main in 'main.pas' {FormMain},
-  cSampleData in 'cSampleData.pas',
   xn.grid.link in '..\..\sources\xn.grid.link.pas';
 
 {$R *.res}
