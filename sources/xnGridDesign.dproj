@@ -1,9 +1,9 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
-        <ProjectGuid>{A8371B9B-30EA-42BB-B7D6-FB626FB814C7}</ProjectGuid>
-        <MainSource>xnGrid.dpk</MainSource>
+        <ProjectGuid>{F9F34AF8-FD80-4E27-ADA8-9971986D22A5}</ProjectGuid>
+        <MainSource>xnGridDesign.dpk</MainSource>
         <ProjectVersion>15.4</ProjectVersion>
-        <FrameworkType>VCL</FrameworkType>
+        <FrameworkType>None</FrameworkType>
         <Base>True</Base>
         <Config Condition="'$(Config)'==''">Debug</Config>
         <Platform Condition="'$(Platform)'==''">Win32</Platform>
@@ -15,6 +15,16 @@
     </PropertyGroup>
     <PropertyGroup Condition="('$(Platform)'=='Android' and '$(Base)'=='true') or '$(Base_Android)'!=''">
         <Base_Android>true</Base_Android>
+        <CfgParent>Base</CfgParent>
+        <Base>true</Base>
+    </PropertyGroup>
+    <PropertyGroup Condition="('$(Platform)'=='iOSDevice' and '$(Base)'=='true') or '$(Base_iOSDevice)'!=''">
+        <Base_iOSDevice>true</Base_iOSDevice>
+        <CfgParent>Base</CfgParent>
+        <Base>true</Base>
+    </PropertyGroup>
+    <PropertyGroup Condition="('$(Platform)'=='iOSSimulator' and '$(Base)'=='true') or '$(Base_iOSSimulator)'!=''">
+        <Base_iOSSimulator>true</Base_iOSSimulator>
         <CfgParent>Base</CfgParent>
         <Base>true</Base>
     </PropertyGroup>
@@ -50,6 +60,18 @@
         <Cfg_2>true</Cfg_2>
         <Base>true</Base>
     </PropertyGroup>
+    <PropertyGroup Condition="('$(Platform)'=='iOSDevice' and '$(Cfg_2)'=='true') or '$(Cfg_2_iOSDevice)'!=''">
+        <Cfg_2_iOSDevice>true</Cfg_2_iOSDevice>
+        <CfgParent>Cfg_2</CfgParent>
+        <Cfg_2>true</Cfg_2>
+        <Base>true</Base>
+    </PropertyGroup>
+    <PropertyGroup Condition="('$(Platform)'=='iOSSimulator' and '$(Cfg_2)'=='true') or '$(Cfg_2_iOSSimulator)'!=''">
+        <Cfg_2_iOSSimulator>true</Cfg_2_iOSSimulator>
+        <CfgParent>Cfg_2</CfgParent>
+        <Cfg_2>true</Cfg_2>
+        <Base>true</Base>
+    </PropertyGroup>
     <PropertyGroup Condition="('$(Platform)'=='Win32' and '$(Cfg_2)'=='true') or '$(Cfg_2_Win32)'!=''">
         <Cfg_2_Win32>true</Cfg_2_Win32>
         <CfgParent>Cfg_2</CfgParent>
@@ -63,11 +85,11 @@
         <Base>true</Base>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
-        <SanitizedProjectName>xnGrid</SanitizedProjectName>
-        <GenDll>true</GenDll>
-        <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;$(DCC_Namespace)</DCC_Namespace>
-        <GenPackage>true</GenPackage>
         <DCC_CBuilderOutput>All</DCC_CBuilderOutput>
+        <GenPackage>true</GenPackage>
+        <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;$(DCC_Namespace)</DCC_Namespace>
+        <GenDll>true</GenDll>
+        <SanitizedProjectName>xnGridDesign</SanitizedProjectName>
         <DCC_ExeOutput>.\$(Platform)\$(Config)</DCC_ExeOutput>
         <DCC_E>false</DCC_E>
         <DCC_N>false</DCC_N>
@@ -76,27 +98,41 @@
         <DCC_K>false</DCC_K>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Android)'!=''">
-        <DCC_DcuOutput>Android</DCC_DcuOutput>
-        <DCC_BplOutput>C:\Users\Public\Documents\Embarcadero\Studio\14.0\Bpl\</DCC_BplOutput>
-        <DCC_DcpOutput>C:\Users\Public\Documents\Embarcadero\Studio\14.0\Dcp\</DCC_DcpOutput>
         <DCC_UsePackage>rtl;$(DCC_UsePackage)</DCC_UsePackage>
+        <DCC_DcuOutput>Android</DCC_DcuOutput>
         <DCC_CBuilderOutput>None</DCC_CBuilderOutput>
+        <DCC_DcpOutput>C:\Users\Public\Documents\Embarcadero\Studio\14.0\Dcp\</DCC_DcpOutput>
+        <DCC_BplOutput>C:\Users\Public\Documents\Embarcadero\Studio\14.0\Bpl\</DCC_BplOutput>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Base_iOSDevice)'!=''">
+        <DCC_UsePackage>rtl;$(DCC_UsePackage)</DCC_UsePackage>
+        <DCC_DcuOutput>iOSDevice</DCC_DcuOutput>
+        <DCC_CBuilderOutput>None</DCC_CBuilderOutput>
+        <DCC_DcpOutput>C:\Users\Public\Documents\Embarcadero\Studio\14.0\Dcp\</DCC_DcpOutput>
+        <DCC_BplOutput>C:\Users\Public\Documents\Embarcadero\Studio\14.0\Bpl\</DCC_BplOutput>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Base_iOSSimulator)'!=''">
+        <DCC_UsePackage>rtl;$(DCC_UsePackage)</DCC_UsePackage>
+        <DCC_DcuOutput>iOSSimulator</DCC_DcuOutput>
+        <DCC_CBuilderOutput>None</DCC_CBuilderOutput>
+        <DCC_DcpOutput>C:\Users\Public\Documents\Embarcadero\Studio\14.0\Dcp\</DCC_DcpOutput>
+        <DCC_BplOutput>C:\Users\Public\Documents\Embarcadero\Studio\14.0\Bpl\</DCC_BplOutput>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win32)'!=''">
-        <DCC_DcuOutput>Win32</DCC_DcuOutput>
-        <DCC_BplOutput>C:\Users\Public\Documents\Embarcadero\Studio\14.0\Bpl\</DCC_BplOutput>
-        <DCC_DcpOutput>C:\Users\Public\Documents\Embarcadero\Studio\14.0\Dcp\</DCC_DcpOutput>
-        <DCC_UsePackage>rtl;vcl;$(DCC_UsePackage)</DCC_UsePackage>
-        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
-        <DCC_Namespace>Winapi;System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
+        <DCC_UsePackage>rtl;xnGrid;$(DCC_UsePackage)</DCC_UsePackage>
         <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
+        <DCC_Namespace>Winapi;System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
         <VerInfo_Locale>1033</VerInfo_Locale>
+        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
+        <DCC_DcpOutput>C:\Users\Public\Documents\Embarcadero\Studio\14.0\Dcp\</DCC_DcpOutput>
+        <DCC_BplOutput>C:\Users\Public\Documents\Embarcadero\Studio\14.0\Bpl\</DCC_BplOutput>
+        <DCC_DcuOutput>Win32</DCC_DcuOutput>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win64)'!=''">
+        <DCC_UsePackage>rtl;$(DCC_UsePackage)</DCC_UsePackage>
         <DCC_DcuOutput>Win64</DCC_DcuOutput>
         <DCC_BplOutput>C:\Users\Public\Documents\Embarcadero\Studio\14.0\Bpl\Win64\</DCC_BplOutput>
         <DCC_DcpOutput>C:\Users\Public\Documents\Embarcadero\Studio\14.0\Dcp\Win64\</DCC_DcpOutput>
-        <DCC_UsePackage>rtl;vcl;$(DCC_UsePackage)</DCC_UsePackage>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1)'!=''">
         <DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
@@ -120,6 +156,16 @@
         <DCC_BplOutput>C:\Users\Public\Documents\Embarcadero\Studio\14.0\Bpl\</DCC_BplOutput>
         <DCC_DcpOutput>C:\Users\Public\Documents\Embarcadero\Studio\14.0\Dcp\</DCC_DcpOutput>
     </PropertyGroup>
+    <PropertyGroup Condition="'$(Cfg_2_iOSDevice)'!=''">
+        <DCC_DcuOutput>iOSDevice</DCC_DcuOutput>
+        <DCC_BplOutput>C:\Users\Public\Documents\Embarcadero\Studio\14.0\Bpl\</DCC_BplOutput>
+        <DCC_DcpOutput>C:\Users\Public\Documents\Embarcadero\Studio\14.0\Dcp\</DCC_DcpOutput>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Cfg_2_iOSSimulator)'!=''">
+        <DCC_DcuOutput>iOSSimulator</DCC_DcuOutput>
+        <DCC_BplOutput>C:\Users\Public\Documents\Embarcadero\Studio\14.0\Bpl\</DCC_BplOutput>
+        <DCC_DcpOutput>C:\Users\Public\Documents\Embarcadero\Studio\14.0\Dcp\</DCC_DcpOutput>
+    </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
         <DCC_DcuOutput>Win32</DCC_DcuOutput>
         <DCC_BplOutput>C:\Users\Public\Documents\Embarcadero\Studio\14.0\Bpl\</DCC_BplOutput>
@@ -134,12 +180,11 @@
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
+        <DCCReference Include="..\delphi-xn-grid.dcr"/>
+        <DCCReference Include="designide.dcp"/>
         <DCCReference Include="rtl.dcp"/>
-        <DCCReference Include="vcl.dcp"/>
-        <DCCReference Include="xn.grid.pas"/>
-        <DCCReference Include="xn.grid.common.pas"/>
-        <DCCReference Include="xn.list.pas"/>
-        <DCCReference Include="xn.grid.data.pas"/>
+        <DCCReference Include="xnGrid.dcp"/>
+        <DCCReference Include="xn.grid.register.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -157,68 +202,15 @@
         <Borland.ProjectType>Package</Borland.ProjectType>
         <BorlandProject>
             <Delphi.Personality>
-                <VersionInfo>
-                    <VersionInfo Name="IncludeVerInfo">True</VersionInfo>
-                    <VersionInfo Name="AutoIncBuild">False</VersionInfo>
-                    <VersionInfo Name="MajorVer">1</VersionInfo>
-                    <VersionInfo Name="MinorVer">0</VersionInfo>
-                    <VersionInfo Name="Release">0</VersionInfo>
-                    <VersionInfo Name="Build">0</VersionInfo>
-                    <VersionInfo Name="Debug">False</VersionInfo>
-                    <VersionInfo Name="PreRelease">False</VersionInfo>
-                    <VersionInfo Name="Special">False</VersionInfo>
-                    <VersionInfo Name="Private">False</VersionInfo>
-                    <VersionInfo Name="DLL">False</VersionInfo>
-                    <VersionInfo Name="Locale">1040</VersionInfo>
-                    <VersionInfo Name="CodePage">1252</VersionInfo>
-                </VersionInfo>
-                <VersionInfoKeys>
-                    <VersionInfoKeys Name="CompanyName"/>
-                    <VersionInfoKeys Name="FileDescription"/>
-                    <VersionInfoKeys Name="FileVersion">1.0.0.0</VersionInfoKeys>
-                    <VersionInfoKeys Name="InternalName"/>
-                    <VersionInfoKeys Name="LegalCopyright"/>
-                    <VersionInfoKeys Name="LegalTrademarks"/>
-                    <VersionInfoKeys Name="OriginalFilename"/>
-                    <VersionInfoKeys Name="ProductName"/>
-                    <VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys>
-                    <VersionInfoKeys Name="Comments"/>
-                    <VersionInfoKeys Name="CFBundleName"/>
-                    <VersionInfoKeys Name="CFBundleDisplayName"/>
-                    <VersionInfoKeys Name="UIDeviceFamily"/>
-                    <VersionInfoKeys Name="CFBundleIdentifier"/>
-                    <VersionInfoKeys Name="CFBundleVersion"/>
-                    <VersionInfoKeys Name="CFBundlePackageType"/>
-                    <VersionInfoKeys Name="CFBundleSignature"/>
-                    <VersionInfoKeys Name="CFBundleAllowMixedLocalizations"/>
-                    <VersionInfoKeys Name="UISupportedInterfaceOrientations"/>
-                    <VersionInfoKeys Name="CFBundleExecutable"/>
-                    <VersionInfoKeys Name="CFBundleResourceSpecification"/>
-                    <VersionInfoKeys Name="LSRequiresIPhoneOS"/>
-                    <VersionInfoKeys Name="CFBundleInfoDictionaryVersion"/>
-                    <VersionInfoKeys Name="CFBundleDevelopmentRegion"/>
-                    <VersionInfoKeys Name="package"/>
-                    <VersionInfoKeys Name="label"/>
-                    <VersionInfoKeys Name="versionCode"/>
-                    <VersionInfoKeys Name="versionName"/>
-                    <VersionInfoKeys Name="persistent"/>
-                    <VersionInfoKeys Name="restoreAnyVersion"/>
-                    <VersionInfoKeys Name="installLocation"/>
-                    <VersionInfoKeys Name="largeHeap"/>
-                    <VersionInfoKeys Name="theme"/>
-                </VersionInfoKeys>
                 <Source>
-                    <Source Name="MainSource">xnGrid.dpk</Source>
+                    <Source Name="MainSource">xnGridDesign.dpk</Source>
                 </Source>
-                <Excluded_Packages>
-                    <Excluded_Packages Name="$(BDSBIN)\DataExplorerDBXPlugin200.bpl">DBExpress Data Explorer Integration</Excluded_Packages>
-                    <Excluded_Packages Name="$(BDSBIN)\dcloffice2k200.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
-                    <Excluded_Packages Name="$(BDSBIN)\dclofficexp200.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
-                </Excluded_Packages>
             </Delphi.Personality>
             <Deployment/>
             <Platforms>
                 <Platform value="Android">False</Platform>
+                <Platform value="iOSDevice">False</Platform>
+                <Platform value="iOSSimulator">False</Platform>
                 <Platform value="Win32">True</Platform>
                 <Platform value="Win64">False</Platform>
             </Platforms>

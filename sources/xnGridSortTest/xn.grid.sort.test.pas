@@ -79,10 +79,6 @@ end;
 
 procedure TestTxnGridLinkSort.TearDown;
 begin
-//  fGridFilterItems.Free;
-//  fGridFilterItems := nil;;
-//  fGridSortItems.Free;
-//  fGridSortItems := nil;
   fGridDataFilterSort.Free;
   fGridDataFilterSort := nil;
 end;

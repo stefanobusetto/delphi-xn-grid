@@ -1,6 +1,7 @@
-package xnGrid;
+package xnGridDesign;
 
 {$R *.res}
+{$R '..\delphi-xn-grid.dcr'}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
 {$ALIGN 8}
 {$ASSERTIONS ON}
@@ -28,13 +29,11 @@ package xnGrid;
 {$IMPLICITBUILD ON}
 
 requires
+  designide,
   rtl,
-  vcl;
+  xnGrid;
 
 contains
-  xn.grid in 'xn.grid.pas',
-  xn.grid.common in 'xn.grid.common.pas',
-  xn.list in 'xn.list.pas',
-  xn.grid.data in 'xn.grid.data.pas';
+  xn.grid.register in 'xn.grid.register.pas';
 
 end.

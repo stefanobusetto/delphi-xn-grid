@@ -29,7 +29,6 @@ type
       ('34', 'LtGray', 'AZ', '3,94', '10', 'F'),
       ('36', 'Silver', 'NY', '3,76', '8', 'F'),
       ('38', 'Purple', 'HI', '2,56', '68', 'F'));
-
   public
     class function RowCount: LongInt;
     class function Value(aCol, aRow: integer): string;
@@ -60,6 +59,28 @@ type
   TSampleGridDataRandom = class(TSampleGridData2By2)
   private
     procedure Fill(aCount: integer); override;
+  end;
+
+  TSampleGridDataList = class(TInterfacedObject, IxnGridData)
+  type
+    TItem = record
+      NN: String;
+      CC: String;
+      SS: String;
+      FF: String;
+      II: string;
+      BB: string;
+      constructor Create(aNN, aCC, aSS, aFF, aII, aBB: string);
+    end;
+  private
+    fItems: TList<TItem>;
+  public
+    constructor Create;
+    destructor Destroy; override;
+    function RowCount: LongInt;
+    function AsDebug: string;
+    function ValueString(aCol, aRow: LongInt): String;
+    function ValueFloat(aCol, aRow: LongInt): Double;
   end;
 
 implementation
@@ -194,6 +215,80 @@ var
 begin
   for i := 0 to aCount - 1 do
     fItems.Add(RandomRange(0, 100));
+end;
+
+{ TSampleList.TItem }
+
+constructor TSampleGridDataList.TItem.Create(aNN, aCC, aSS, aFF, aII, aBB: string);
+begin
+  NN := aNN;
+  CC := aCC;
+  SS := aSS;
+  FF := aFF;
+  II := aII;
+  BB := aBB;
+end;
+
+{ TSampleList }
+
+function TSampleGridDataList.AsDebug: string;
+var
+  r: integer;
+begin
+  Result := '';
+  for r := 0 to RowCount - 1 do
+    Result := Result + ValueString(0, r) + ','
+end;
+
+constructor TSampleGridDataList.Create;
+var
+  i: integer;
+begin
+  fItems := TList<TItem>.Create;
+  for i := 0 to Length(TSampleData.TABLE_20) - 1 do
+    fItems.Add(TItem.Create(
+      TSampleData.TABLE_20[i][0],
+      TSampleData.TABLE_20[i][1],
+      TSampleData.TABLE_20[i][2],
+      TSampleData.TABLE_20[i][3],
+      TSampleData.TABLE_20[i][4],
+      TSampleData.TABLE_20[i][5]));
+end;
+
+destructor TSampleGridDataList.Destroy;
+begin
+  fItems.Free;
+  inherited;
+end;
+
+function TSampleGridDataList.RowCount: LongInt;
+begin
+  Result := fItems.Count;
+end;
+
+function TSampleGridDataList.ValueFloat(aCol, aRow: integer): Double;
+begin
+  Result := StrToFloat(ValueString(aCol, aRow));
+end;
+
+function TSampleGridDataList.ValueString(aCol, aRow: integer): String;
+begin
+  case aCol of
+    0:
+      Result := fItems[aRow].NN;
+    1:
+      Result := fItems[aRow].CC;
+    2:
+      Result := fItems[aRow].SS;
+    3:
+      Result := fItems[aRow].FF;
+    4:
+      Result := fItems[aRow].II;
+    5:
+      Result := fItems[aRow].BB;
+  else
+    raise Exception.Create('Invalid column index.');
+  end;
 end;
 
 end.

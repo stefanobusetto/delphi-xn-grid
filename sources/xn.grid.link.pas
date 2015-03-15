@@ -2,7 +2,7 @@ unit xn.grid.link;
 
 interface
 
-uses xn.grid.common, xn.grid.data ;
+uses xn.grid.common, xn.grid.data;
 
 type
   TxnGridLink = class(TInterfacedObject, IxnGridData)
@@ -12,12 +12,12 @@ type
   public
     constructor Create(aGridData: IxnGridData; aFilterItems: IxnGridFilterItems; aSortItems: IxnGridSortItems);
     destructor Destroy; override;
+    procedure Clear; virtual;
+    procedure Fill; virtual;
     procedure Sort; overload;
     function Seek1(aKeys: TArray<variant>): integer;
     function Seek2(aKeys: TArray<variant>): integer;
 
-    procedure Clear; virtual;
-    procedure Fill; virtual;
     function RowCount: LongInt; virtual;
     function AsDebug: string; virtual;
     function ValueString(aCol, aRow: LongInt): String; virtual;

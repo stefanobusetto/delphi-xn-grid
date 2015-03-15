@@ -6,13 +6,19 @@
         <Projects Include="extras\SampleData\SampleData.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="extras\TestSort\QuickSort.dproj">
+        <Projects Include="extras\QuickSort\QuickSort.dproj">
             <Dependencies/>
         </Projects>
         <Projects Include="sources\xnGrid.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="sources\xnGridDesign.dproj">
+            <Dependencies/>
+        </Projects>
         <Projects Include="sources\xnGridSortTest\xnGridSortTest.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="extras\TestLink\TestLink.dproj">
             <Dependencies/>
         </Projects>
     </ItemGroup>
@@ -33,13 +39,13 @@
         <MSBuild Projects="extras\SampleData\SampleData.dproj" Targets="Make"/>
     </Target>
     <Target Name="QuickSort">
-        <MSBuild Projects="extras\TestSort\QuickSort.dproj"/>
+        <MSBuild Projects="extras\QuickSort\QuickSort.dproj"/>
     </Target>
     <Target Name="QuickSort:Clean">
-        <MSBuild Projects="extras\TestSort\QuickSort.dproj" Targets="Clean"/>
+        <MSBuild Projects="extras\QuickSort\QuickSort.dproj" Targets="Clean"/>
     </Target>
     <Target Name="QuickSort:Make">
-        <MSBuild Projects="extras\TestSort\QuickSort.dproj" Targets="Make"/>
+        <MSBuild Projects="extras\QuickSort\QuickSort.dproj" Targets="Make"/>
     </Target>
     <Target Name="xnGrid">
         <MSBuild Projects="sources\xnGrid.dproj"/>
@@ -50,6 +56,15 @@
     <Target Name="xnGrid:Make">
         <MSBuild Projects="sources\xnGrid.dproj" Targets="Make"/>
     </Target>
+    <Target Name="xnGridDesign">
+        <MSBuild Projects="sources\xnGridDesign.dproj"/>
+    </Target>
+    <Target Name="xnGridDesign:Clean">
+        <MSBuild Projects="sources\xnGridDesign.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="xnGridDesign:Make">
+        <MSBuild Projects="sources\xnGridDesign.dproj" Targets="Make"/>
+    </Target>
     <Target Name="xnGridSortTest">
         <MSBuild Projects="sources\xnGridSortTest\xnGridSortTest.dproj"/>
     </Target>
@@ -59,14 +74,23 @@
     <Target Name="xnGridSortTest:Make">
         <MSBuild Projects="sources\xnGridSortTest\xnGridSortTest.dproj" Targets="Make"/>
     </Target>
+    <Target Name="TestLink">
+        <MSBuild Projects="extras\TestLink\TestLink.dproj"/>
+    </Target>
+    <Target Name="TestLink:Clean">
+        <MSBuild Projects="extras\TestLink\TestLink.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="TestLink:Make">
+        <MSBuild Projects="extras\TestLink\TestLink.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="SampleData;QuickSort;xnGrid;xnGridSortTest"/>
+        <CallTarget Targets="SampleData;QuickSort;xnGrid;xnGridDesign;xnGridSortTest;TestLink"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="SampleData:Clean;QuickSort:Clean;xnGrid:Clean;xnGridSortTest:Clean"/>
+        <CallTarget Targets="SampleData:Clean;QuickSort:Clean;xnGrid:Clean;xnGridDesign:Clean;xnGridSortTest:Clean;TestLink:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="SampleData:Make;QuickSort:Make;xnGrid:Make;xnGridSortTest:Make"/>
+        <CallTarget Targets="SampleData:Make;QuickSort:Make;xnGrid:Make;xnGridDesign:Make;xnGridSortTest:Make;TestLink:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>
