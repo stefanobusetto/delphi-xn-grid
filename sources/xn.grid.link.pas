@@ -2,7 +2,7 @@ unit xn.grid.link;
 
 interface
 
-uses xn.grid.common, xn.grid.data;
+uses xn.grid.common, xn.grid.data ;
 
 type
   TxnGridLink = class(TInterfacedObject, IxnGridData)
