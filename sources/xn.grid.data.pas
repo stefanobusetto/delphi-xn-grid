@@ -1,10 +1,12 @@
-﻿unit xn.grid.Sort;
+﻿unit xn.grid.data;
 
 interface
 
-uses Generics.Collections, xn.grid.link;
+uses Generics.Collections, xn.grid.common, xn.list;
 
 type
+  // ********************************************************************************
+  // ********************************************************************************
   TxnGridSortItem = record
   type
     TKind = (gskStr, gskNum);
@@ -17,8 +19,8 @@ type
     constructor Create(aIndex: integer; aKind: TKind; aOrder: TOrder);
   end;
 
-  TxnGridSortItems = class(TList<TxnGridSortItem>)
-  end;
+  IxnGridSortItems = IxnList<TxnGridSortItem>;
+  TxnGridSortItems = TxnList<TxnGridSortItem>;
 
   TxnGridFilterItem = record
   type
@@ -33,66 +35,110 @@ type
     constructor Create(aIndex: integer; aValue: variant; aKind: TKind; aCase: TCase);
   end;
 
-  TxnGridFilterItems = class(TList<TxnGridFilterItem>)
-  end;
+  IxnGridFilterItems = IxnList<TxnGridFilterItem>;
+  TxnGridFilterItems = TxnList<TxnGridFilterItem>;
 
+  // ********************************************************************************
+  // ********************************************************************************
   TxnGridData = class(TInterfacedObject, IxnGridData)
   private
     fData: IxnGridData;
     fIndex: TList<integer>;
   public
     procedure Clear; virtual;
-    procedure Fill; virtual;
     function RowCount: LongInt; virtual;
     function AsDebug: string; virtual;
     function ValueString(aCol, aRow: LongInt): String; virtual;
     function ValueFloat(aCol, aRow: LongInt): Double; virtual;
   end;
 
+  // ********************************************************************************
+  // ********************************************************************************
   TxnGridDataSort = class(TxnGridData)
   strict private
-    fItems: TxnGridSortItems;
+    fItems: IxnGridSortItems;
     function Comparer(const aLeft, aRight: TArray<variant>): integer;
     function Getter(const aIndex: integer): TArray<variant>;
-
     procedure Sort(aStart, aStop: integer); overload;
   public
-    constructor Create(aGridData: IxnGridData; aSortItems: TxnGridSortItems);
+    constructor Create(aGridData: IxnGridData; aSortItems: IxnGridSortItems);
     destructor Destroy; override;
-    procedure Fill; override;
+    procedure Fill; virtual;
     procedure Sort; overload;
-    function Seek(aKeys: TArray<variant>): integer;
+    function Seek1(aKeys: TArray<variant>): integer;
     function Seek2(aKeys: TArray<variant>): integer;
   end;
 
   TxnGridDataFilter = class(TxnGridData)
   strict private
-    fItems: TxnGridFilterItems;
+    fItems: IxnGridFilterItems;
     function Comparer(const aLeft, aRight: TArray<variant>): integer;
     function Getter(const aIndex: integer): TArray<variant>;
   public
-    constructor Create(aGridData: IxnGridData; aFilterItems: TxnGridFilterItems);
+    constructor Create(aGridData: IxnGridData; aFilterItems: IxnGridFilterItems);
     destructor Destroy; override;
-    procedure Fill; override;
-  end;
-
-  TxnGridDataFilterSort = class(TInterfacedObject, IxnGridData)//class(TxnGridDataSort)
-  private
-    fDataSort: IxnGridData;
-    fDataFilter: IxnGridData;
-  public
-    constructor Create(aGridData: IxnGridData; aFilterItems: TxnGridFilterItems; aSortItems: TxnGridSortItems);
-    procedure Fill; override;
-    procedure Sort; overload;
-    function Seek(aKeys: TArray<variant>): integer;
-    function Seek2(aKeys: TArray<variant>): integer;
+    procedure Fill; virtual;
   end;
 
 implementation
 
 uses System.SysUtils;
 
-{ TxnGridLinkSort }
+{ TxnGridSortItem }
+
+constructor TxnGridSortItem.Create(aIndex: integer;
+  aKind:
+  TKind;
+  aOrder:
+  TOrder);
+begin
+  fIndex := aIndex;
+  fKind := aKind;
+  fOrder := aOrder;
+end;
+
+{ TxnGridFilterItem }
+
+constructor TxnGridFilterItem.Create(aIndex: integer; aValue: variant; aKind: TKind; aCase: TCase);
+begin
+  fIndex := aIndex;
+  fKind := aKind;
+  fCase := aCase;
+  fValue := aValue;
+end;
+
+{ TxnGridData }
+
+function TxnGridData.AsDebug: string;
+var
+  r: integer;
+begin
+  Result := '';
+  for r := 0 to RowCount - 1 do
+    Result := Result + ValueString(0, r) + ','
+end;
+
+procedure TxnGridData.Clear;
+begin
+  fIndex.Clear;
+end;
+
+function TxnGridData.RowCount: LongInt;
+begin
+  Result := fIndex.Count
+end;
+
+function TxnGridData.ValueFloat(aCol, aRow: integer): Double;
+begin
+  Result := fData.ValueFloat(aCol, fIndex[aRow]);
+end;
+
+function TxnGridData.ValueString(aCol, aRow: integer): String;
+begin
+  Result := fData.ValueString(aCol, fIndex[aRow]);
+end;
+
+{ TxnGridDataSort }
 
 procedure TxnGridDataSort.Sort(aStart, aStop: integer);
 var
@@ -111,7 +157,8 @@ begin
 
     if iStart <= iStop then
     begin
-      fIndex.Exchange(iStart, iStop);
+      if iStart <> iStop then
+        fIndex.Exchange(iStart, iStop);
       Inc(iStart);
       Dec(iStop);
     end;
@@ -150,7 +197,7 @@ begin
   exit(0);
 end;
 
-constructor TxnGridDataSort.Create(aGridData: IxnGridData; aSortItems: TxnGridSortItems);
+constructor TxnGridDataSort.Create(aGridData: IxnGridData; aSortItems: IxnGridSortItems);
 begin
   fData := aGridData;
   fItems := aSortItems;
@@ -187,7 +234,7 @@ begin
       Result[i] := ValueFloat(fItems[i].fIndex, aIndex)
 end;
 
-function TxnGridDataSort.Seek(aKeys: TArray<variant>): integer;
+function TxnGridDataSort.Seek1(aKeys: TArray<variant>): integer;
 var
   iStart: integer;
   iStop: integer;
@@ -229,7 +276,6 @@ var
 begin
   // returns the expected index of the item in the list
   // -1 if the item is after the last item of the list
-
   iStart := 0;
   oStart := 0;
   iStop := fIndex.Count - 1;
@@ -283,34 +329,10 @@ begin
       Sort(0, fIndex.Count - 1);
 end;
 
-{ TxnGridSortItem }
-
-constructor TxnGridSortItem.Create(aIndex: integer;
-  aKind:
-  TKind;
-  aOrder:
-  TOrder);
-begin
-  fIndex := aIndex;
-  fKind := aKind;
-  fOrder := aOrder;
-end;
-
-{ TxnGridFilterItem }
-
-constructor TxnGridFilterItem.Create(aIndex: integer; aValue: variant; aKind: TKind; aCase: TCase);
-begin
-  fIndex := aIndex;
-  fKind := aKind;
-  fCase := aCase;
-  fValue := aValue;
-end;
-
 { TxnGridDataFilter }
 
 function TxnGridDataFilter.Comparer(const aLeft, aRight: TArray<variant>): integer;
 var
-  t: variant;
   l: variant;
   r: variant;
   i: integer;
@@ -334,10 +356,7 @@ begin
   exit(0);
 end;
 
-constructor TxnGridDataFilter.Create(aGridData: IxnGridData; aFilterItems: TxnGridFilterItems);
-var
-  i: integer;
-  n: integer;
+constructor TxnGridDataFilter.Create(aGridData: IxnGridData; aFilterItems: IxnGridFilterItems);
 begin
   fData := aGridData;
   fItems := aFilterItems;
@@ -355,14 +374,12 @@ end;
 procedure TxnGridDataFilter.Fill;
 var
   i: integer;
-  n: integer;
   a: TArray<variant>;
 begin
   SetLength(a, fItems.Count);
   for i := 0 to fItems.Count - 1 do
     a[i] := fItems[i].fValue;
 
-  n := fData.RowCount;
   fIndex.Clear;
   for i := 0 to fData.RowCount - 1 do
     if Comparer(a, Getter(i)) = 0 then
@@ -380,72 +397,6 @@ begin
       Result[i] := fData.ValueString(fItems[i].fIndex, aIndex)
     else
       Result[i] := fData.ValueFloat(fItems[i].fIndex, aIndex)
-end;
-
-{ TxnGridData }
-
-function TxnGridData.AsDebug: string;
-var
-  r: integer;
-begin
-  Result := '';
-  for r := 0 to RowCount - 1 do
-    Result := Result + ValueString(0, r) + ','
-end;
-
-procedure TxnGridData.Clear;
-begin
-  fIndex.Clear;
-end;
-
-procedure TxnGridData.Fill;
-begin
-end;
-
-function TxnGridData.RowCount: LongInt;
-begin
-  Result := fIndex.Count
-end;
-
-function TxnGridData.ValueFloat(aCol, aRow: integer): Double;
-begin
-  Result := fData.ValueFloat(aCol, fIndex[aRow]);
-end;
-
-function TxnGridData.ValueString(aCol, aRow: integer): String;
-begin
-  Result := fData.ValueString(aCol, fIndex[aRow]);
-end;
-
-{ TxnGridDataFilterSort }
-
-{ TxnGridDataFilterSort }
-
-constructor TxnGridDataFilterSort.Create(aGridData: IxnGridData; aFilterItems: TxnGridFilterItems; aSortItems: TxnGridSortItems);
-begin
-  fDataFilter := TxnGridDataFilter.Create(aGridData, aFilterItems);
-  inherited Create(fDataFilter, aSortItems);
-end;
-
-procedure TxnGridDataFilterSort.Fill;
-begin
-  fDataFilter.Fill;
-  inherited Fill;
-end;
-
-function TxnGridDataFilterSort.Seek(aKeys: TArray<variant>): integer;
-begin
-  Result := inherited Seek(aKeys);
-end;
-
-function TxnGridDataFilterSort.Seek2(aKeys: TArray<variant>): integer;
-begin
-  Result := inherited Seek2(aKeys);
-end;
-
-procedure TxnGridDataFilterSort.Sort;
-begin
-  inherited Sort;
 end;
 
 end.

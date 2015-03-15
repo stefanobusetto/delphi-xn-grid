@@ -97,7 +97,7 @@
         <DCCReference Include="vcl.dcp"/>
         <DCCReference Include="xn.grid.pas"/>
         <DCCReference Include="xn.grid.register.pas"/>
-        <DCCReference Include="xn.grid.link.pas"/>
+        <DCCReference Include="xn.grid.common.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

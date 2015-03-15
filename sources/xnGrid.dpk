@@ -34,6 +34,6 @@ requires
 contains
   xn.grid in 'xn.grid.pas',
   xn.grid.register in 'xn.grid.register.pas',
-  xn.grid.link in 'xn.grid.link.pas';
+  xn.grid.common in 'xn.grid.common.pas';
 
 end.

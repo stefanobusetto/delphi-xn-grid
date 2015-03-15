@@ -2,7 +2,7 @@ unit cSampleData;
 
 interface
 
-uses Generics.Collections, xn.grid.link;
+uses Generics.Collections, xn.grid.common;
 
 type
   TSampleData = class
@@ -37,8 +37,6 @@ type
 
   TSampleGridData = class(TInterfacedObject, IxnGridData)
   public
-    procedure Clear;
-    procedure Fill;
     function RowCount: LongInt;
     function AsDebug: string;
     function ValueString(aCol, aRow: LongInt): String;
@@ -48,13 +46,11 @@ type
   TSampleGridData2By2 = class(TInterfacedObject, IxnGridData)
   private
     fItems: TList<integer>;
-    procedure InnerFill(aCount: integer); virtual;
+    procedure Fill(aCount: integer); virtual;
     procedure Rand; virtual;
   public
     constructor Create(aCount: integer); virtual;
     destructor Destroy; override;
-    procedure Clear;
-    procedure Fill;
     function RowCount: LongInt; virtual;
     function AsDebug: string; virtual;
     function ValueString(aCol, aRow: LongInt): String; virtual;
@@ -63,7 +59,7 @@ type
 
   TSampleGridDataRandom = class(TSampleGridData2By2)
   private
-    procedure InnerFill(aCount: integer); override;
+    procedure Fill(aCount: integer); override;
   end;
 
 implementation
@@ -114,14 +110,6 @@ begin
     Result := Result + ValueString(0, r) + ','
 end;
 
-procedure TSampleGridData.Clear;
-begin
-end;
-
-procedure TSampleGridData.Fill;
-begin
-end;
-
 function TSampleGridData.RowCount: LongInt;
 begin
   Result := TSampleData.RowCount
@@ -148,15 +136,11 @@ begin
     Result := Result + ValueString(0, r) + ','
 end;
 
-procedure TSampleGridData2By2.Clear;
-begin
-end;
-
 constructor TSampleGridData2By2.Create(aCount: integer);
 begin
   inherited Create;
   fItems := TList<integer>.Create;
-  InnerFill(aCount);
+  Fill(aCount);
   Rand;
 end;
 
@@ -165,11 +149,7 @@ begin
   fItems.Free;
 end;
 
-procedure TSampleGridData2By2.Fill;
-begin
-end;
-
-procedure TSampleGridData2By2.InnerFill(aCount: integer);
+procedure TSampleGridData2By2.Fill(aCount: integer);
 var
   i: integer;
 begin
@@ -208,7 +188,7 @@ end;
 
 { TSampleGridDataRandom }
 
-procedure TSampleGridDataRandom.InnerFill(aCount: integer);
+procedure TSampleGridDataRandom.Fill(aCount: integer);
 var
   i: integer;
 begin

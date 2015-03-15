@@ -4,7 +4,7 @@ interface
 
 uses Generics.Collections, // Vcl.Dialogs,
   Vcl.Controls, Windows, SysUtils, System.Classes, Vcl.Grids,
-  xn.grid.link;
+  xn.grid.data, xn.grid.common;
 
 type
   TxnGrid = class;

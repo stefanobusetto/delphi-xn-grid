@@ -9,16 +9,17 @@
 interface
 
 uses cSampleData,
-  TestFramework, Generics.Collections, xn.grid.Sort, xn.grid.link;
+  TestFramework, Generics.Collections, xn.grid.data, xn.grid.common,
+  xn.grid.link;
 
 type
   TestTxnGridLinkSort = class(TTestCase)
   strict private
     fGridData: IxnGridData;
 
-    fGridDataFilterSort: TxnGridDataFilterSort;
-    fGridSortItems: TxnGridSortItems;
-    fGridFilterItems: TxnGridFilterItems;
+    fGridDataFilterSort: TxnGridLink;
+    fGridSortItems: IxnGridSortItems;
+    fGridFilterItems: IxnGridFilterItems;
 
     function BuildArray(aNumber: double): TArray<variant>;
   public
@@ -54,6 +55,9 @@ type
     procedure Test_SeekExpected_39_Not_Found;
 
     procedure Test_Filter_Column_2_LA_CI_Ok;
+    procedure Test_Filter_Column_5_F_CI_Ok;
+    procedure Test_Filter_Column_5_F_CI_Column_1_Lime_CS_Ok;
+    procedure Test_Filter_Column_3_376_Ok;
   end;
 
 implementation
@@ -70,15 +74,15 @@ begin
   fGridSortItems := TxnGridSortItems.Create;
   fGridFilterItems := TxnGridFilterItems.Create;
 
-  fGridDataFilterSort := TxnGridDataFilterSort.Create(fGridData, fGridFilterItems, fGridSortItems);
+  fGridDataFilterSort := TxnGridLink.Create(fGridData, fGridFilterItems, fGridSortItems);
 end;
 
 procedure TestTxnGridLinkSort.TearDown;
 begin
-  fGridFilterItems.Free;
-  fGridFilterItems := nil;;
-  fGridSortItems.Free;
-  fGridSortItems := nil;
+//  fGridFilterItems.Free;
+//  fGridFilterItems := nil;;
+//  fGridSortItems.Free;
+//  fGridSortItems := nil;
   fGridDataFilterSort.Free;
   fGridDataFilterSort := nil;
 end;
@@ -93,6 +97,28 @@ begin
   fGridFilterItems.Add(TxnGridFilterItem.Create(2, 'la', gfkStr, gfcCaseInsensitive));
   fGridDataFilterSort.Fill;
   CheckEquals('2,8,', fGridDataFilterSort.AsDebug);
+end;
+
+procedure TestTxnGridLinkSort.Test_Filter_Column_3_376_Ok;
+begin
+  fGridFilterItems.Add(TxnGridFilterItem.Create(3, '3,76', gfkNum, gfcCaseInsensitive));
+  fGridDataFilterSort.Fill;
+  CheckEquals('2,30,36,', fGridDataFilterSort.AsDebug);
+end;
+
+procedure TestTxnGridLinkSort.Test_Filter_Column_5_F_CI_Column_1_Lime_CS_Ok;
+begin
+  fGridFilterItems.Add(TxnGridFilterItem.Create(5, 'f', gfkStr, gfcCaseInsensitive));
+  fGridFilterItems.Add(TxnGridFilterItem.Create(1, 'Lime', gfkStr, gfcCaseSensitive));
+  fGridDataFilterSort.Fill;
+  CheckEquals('12,16,', fGridDataFilterSort.AsDebug);
+end;
+
+procedure TestTxnGridLinkSort.Test_Filter_Column_5_F_CI_Ok;
+begin
+  fGridFilterItems.Add(TxnGridFilterItem.Create(5, 'f', gfkStr, gfcCaseInsensitive));
+  fGridDataFilterSort.Fill;
+  CheckEquals('6,8,12,16,18,20,22,28,30,34,36,38,', fGridDataFilterSort.AsDebug);
 end;
 
 procedure TestTxnGridLinkSort.Test_RowCount;
@@ -146,42 +172,42 @@ procedure TestTxnGridLinkSort.Test_SeekActual_0_Found;
 begin
   fGridSortItems.Add(TxnGridSortItem.Create(0, gskNum, gsoAsc));
   fGridDataFilterSort.Sort;
-  CheckEquals(fGridDataFilterSort.Seek(BuildArray(0)), 0);
+  CheckEquals(fGridDataFilterSort.Seek1(BuildArray(0)), 0);
 end;
 
 procedure TestTxnGridLinkSort.Test_SeekActual_1_Not_Found;
 begin
   fGridSortItems.Add(TxnGridSortItem.Create(0, gskNum, gsoAsc));
   fGridDataFilterSort.Sort;
-  CheckEquals(fGridDataFilterSort.Seek(BuildArray(1)), -1);
+  CheckEquals(fGridDataFilterSort.Seek1(BuildArray(1)), -1);
 end;
 
 procedure TestTxnGridLinkSort.Test_SeekActual_2_Found;
 begin
   fGridSortItems.Add(TxnGridSortItem.Create(0, gskNum, gsoAsc));
   fGridDataFilterSort.Sort;
-  CheckEquals(fGridDataFilterSort.Seek(BuildArray(2)), 1);
+  CheckEquals(fGridDataFilterSort.Seek1(BuildArray(2)), 1);
 end;
 
 procedure TestTxnGridLinkSort.Test_SeekActual_37_Not_Found;
 begin
   fGridSortItems.Add(TxnGridSortItem.Create(0, gskNum, gsoAsc));
   fGridDataFilterSort.Sort;
-  CheckEquals(fGridDataFilterSort.Seek(BuildArray(37)), -1);
+  CheckEquals(fGridDataFilterSort.Seek1(BuildArray(37)), -1);
 end;
 
 procedure TestTxnGridLinkSort.Test_SeekActual_38_Found;
 begin
   fGridSortItems.Add(TxnGridSortItem.Create(0, gskNum, gsoAsc));
   fGridDataFilterSort.Sort;
-  CheckEquals(fGridDataFilterSort.Seek(BuildArray(38)), 19);
+  CheckEquals(fGridDataFilterSort.Seek1(BuildArray(38)), 19);
 end;
 
 procedure TestTxnGridLinkSort.Test_SeekActual_39_Not_Found;
 begin
   fGridSortItems.Add(TxnGridSortItem.Create(0, gskNum, gsoAsc));
   fGridDataFilterSort.Sort;
-  CheckEquals(fGridDataFilterSort.Seek(BuildArray(39)), -1);
+  CheckEquals(fGridDataFilterSort.Seek1(BuildArray(39)), -1);
 end;
 
 procedure TestTxnGridLinkSort.Test_Sort_Column_0_Num_Asc_Ok;
