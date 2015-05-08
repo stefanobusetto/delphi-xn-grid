@@ -13,18 +13,20 @@ uses cSampleData,
   xn.grid.link;
 
 type
-  TestTxnGridLinkSort = class(TTestCase)
+  TestTxnGridLinkSampleGridData = class(TTestCase)
   strict private
-    fGridData: IxnGridData;
-
     fGridDataFilterSort: TxnGridLink;
     fGridSortItems: IxnGridSortItems;
     fGridFilterItems: IxnGridFilterItems;
 
     function BuildArray(aNumber: double): TArray<variant>;
+  strict protected
+    fGridData: IxnGridData;
   public
+    procedure GridDataCreate; virtual;
     procedure SetUp; override;
     procedure TearDown; override;
+
   published
     procedure Test_RowCount;
     procedure Test_Value_0_0;
@@ -60,49 +62,59 @@ type
     procedure Test_Filter_Column_3_376_Ok;
   end;
 
+  TestTxnGridLinkSampleGridList = class(TestTxnGridLinkSampleGridData)
+  public
+    procedure GridDataCreate;
+  end;
+
 implementation
 
-function TestTxnGridLinkSort.BuildArray(aNumber: double): TArray<variant>;
+function TestTxnGridLinkSampleGridData.BuildArray(aNumber: double): TArray<variant>;
 begin
   SetLength(Result, 1);
   Result[0] := aNumber;
 end;
 
-procedure TestTxnGridLinkSort.SetUp;
+procedure TestTxnGridLinkSampleGridData.GridDataCreate;
 begin
   fGridData := TSampleGridData.Create;
+end;
+
+procedure TestTxnGridLinkSampleGridData.SetUp;
+begin
+  GridDataCreate;
   fGridSortItems := TxnGridSortItems.Create;
   fGridFilterItems := TxnGridFilterItems.Create;
 
   fGridDataFilterSort := TxnGridLink.Create(fGridData, fGridFilterItems, fGridSortItems);
 end;
 
-procedure TestTxnGridLinkSort.TearDown;
+procedure TestTxnGridLinkSampleGridData.TearDown;
 begin
   fGridDataFilterSort.Free;
   fGridDataFilterSort := nil;
 end;
 
-procedure TestTxnGridLinkSort.Test_AsDebug_NoFilter_NoSort_Ok;
+procedure TestTxnGridLinkSampleGridData.Test_AsDebug_NoFilter_NoSort_Ok;
 begin
   CheckEquals('0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36,38,', fGridDataFilterSort.AsDebug);
 end;
 
-procedure TestTxnGridLinkSort.Test_Filter_Column_2_LA_CI_Ok;
+procedure TestTxnGridLinkSampleGridData.Test_Filter_Column_2_LA_CI_Ok;
 begin
   fGridFilterItems.Add(TxnGridFilterItem.Create(2, 'la', gfkStr, gfcCaseInsensitive));
   fGridDataFilterSort.Fill;
   CheckEquals('2,8,', fGridDataFilterSort.AsDebug);
 end;
 
-procedure TestTxnGridLinkSort.Test_Filter_Column_3_376_Ok;
+procedure TestTxnGridLinkSampleGridData.Test_Filter_Column_3_376_Ok;
 begin
   fGridFilterItems.Add(TxnGridFilterItem.Create(3, '3,76', gfkNum, gfcCaseInsensitive));
   fGridDataFilterSort.Fill;
   CheckEquals('2,30,36,', fGridDataFilterSort.AsDebug);
 end;
 
-procedure TestTxnGridLinkSort.Test_Filter_Column_5_F_CI_Column_1_Lime_CS_Ok;
+procedure TestTxnGridLinkSampleGridData.Test_Filter_Column_5_F_CI_Column_1_Lime_CS_Ok;
 begin
   fGridFilterItems.Add(TxnGridFilterItem.Create(5, 'f', gfkStr, gfcCaseInsensitive));
   fGridFilterItems.Add(TxnGridFilterItem.Create(1, 'Lime', gfkStr, gfcCaseSensitive));
@@ -110,131 +122,131 @@ begin
   CheckEquals('12,16,', fGridDataFilterSort.AsDebug);
 end;
 
-procedure TestTxnGridLinkSort.Test_Filter_Column_5_F_CI_Ok;
+procedure TestTxnGridLinkSampleGridData.Test_Filter_Column_5_F_CI_Ok;
 begin
   fGridFilterItems.Add(TxnGridFilterItem.Create(5, 'f', gfkStr, gfcCaseInsensitive));
   fGridDataFilterSort.Fill;
   CheckEquals('6,8,12,16,18,20,22,28,30,34,36,38,', fGridDataFilterSort.AsDebug);
 end;
 
-procedure TestTxnGridLinkSort.Test_RowCount;
+procedure TestTxnGridLinkSampleGridData.Test_RowCount;
 begin
   CheckEquals(20, fGridDataFilterSort.RowCount);
 end;
 
-procedure TestTxnGridLinkSort.Test_SeekExpected_0_Found;
+procedure TestTxnGridLinkSampleGridData.Test_SeekExpected_0_Found;
 begin
   fGridSortItems.Add(TxnGridSortItem.Create(0, gskNum, gsoAsc));
   fGridDataFilterSort.Sort;
   CheckEquals(fGridDataFilterSort.Seek2(BuildArray(0)), 0);
 end;
 
-procedure TestTxnGridLinkSort.Test_SeekExpected_1_Not_Found;
+procedure TestTxnGridLinkSampleGridData.Test_SeekExpected_1_Not_Found;
 begin
   fGridSortItems.Add(TxnGridSortItem.Create(0, gskNum, gsoAsc));
   fGridDataFilterSort.Sort;
   CheckEquals(fGridDataFilterSort.Seek2(BuildArray(1)), 1);
 end;
 
-procedure TestTxnGridLinkSort.Test_SeekExpected_2_Found;
+procedure TestTxnGridLinkSampleGridData.Test_SeekExpected_2_Found;
 begin
   fGridSortItems.Add(TxnGridSortItem.Create(0, gskNum, gsoAsc));
   fGridDataFilterSort.Sort;
   CheckEquals(fGridDataFilterSort.Seek2(BuildArray(2)), 1);
 end;
 
-procedure TestTxnGridLinkSort.Test_SeekExpected_37_Not_Found;
+procedure TestTxnGridLinkSampleGridData.Test_SeekExpected_37_Not_Found;
 begin
   fGridSortItems.Add(TxnGridSortItem.Create(0, gskNum, gsoAsc));
   fGridDataFilterSort.Sort;
   CheckEquals(fGridDataFilterSort.Seek2(BuildArray(37)), 19);
 end;
 
-procedure TestTxnGridLinkSort.Test_SeekExpected_38_Found;
+procedure TestTxnGridLinkSampleGridData.Test_SeekExpected_38_Found;
 begin
   fGridSortItems.Add(TxnGridSortItem.Create(0, gskNum, gsoAsc));
   fGridDataFilterSort.Sort;
   CheckEquals(fGridDataFilterSort.Seek2(BuildArray(38)), 19);
 end;
 
-procedure TestTxnGridLinkSort.Test_SeekExpected_39_Not_Found;
+procedure TestTxnGridLinkSampleGridData.Test_SeekExpected_39_Not_Found;
 begin
   fGridSortItems.Add(TxnGridSortItem.Create(0, gskNum, gsoAsc));
   fGridDataFilterSort.Sort;
   CheckEquals(fGridDataFilterSort.Seek2(BuildArray(39)), -1);
 end;
 
-procedure TestTxnGridLinkSort.Test_SeekActual_0_Found;
+procedure TestTxnGridLinkSampleGridData.Test_SeekActual_0_Found;
 begin
   fGridSortItems.Add(TxnGridSortItem.Create(0, gskNum, gsoAsc));
   fGridDataFilterSort.Sort;
   CheckEquals(fGridDataFilterSort.Seek1(BuildArray(0)), 0);
 end;
 
-procedure TestTxnGridLinkSort.Test_SeekActual_1_Not_Found;
+procedure TestTxnGridLinkSampleGridData.Test_SeekActual_1_Not_Found;
 begin
   fGridSortItems.Add(TxnGridSortItem.Create(0, gskNum, gsoAsc));
   fGridDataFilterSort.Sort;
   CheckEquals(fGridDataFilterSort.Seek1(BuildArray(1)), -1);
 end;
 
-procedure TestTxnGridLinkSort.Test_SeekActual_2_Found;
+procedure TestTxnGridLinkSampleGridData.Test_SeekActual_2_Found;
 begin
   fGridSortItems.Add(TxnGridSortItem.Create(0, gskNum, gsoAsc));
   fGridDataFilterSort.Sort;
   CheckEquals(fGridDataFilterSort.Seek1(BuildArray(2)), 1);
 end;
 
-procedure TestTxnGridLinkSort.Test_SeekActual_37_Not_Found;
+procedure TestTxnGridLinkSampleGridData.Test_SeekActual_37_Not_Found;
 begin
   fGridSortItems.Add(TxnGridSortItem.Create(0, gskNum, gsoAsc));
   fGridDataFilterSort.Sort;
   CheckEquals(fGridDataFilterSort.Seek1(BuildArray(37)), -1);
 end;
 
-procedure TestTxnGridLinkSort.Test_SeekActual_38_Found;
+procedure TestTxnGridLinkSampleGridData.Test_SeekActual_38_Found;
 begin
   fGridSortItems.Add(TxnGridSortItem.Create(0, gskNum, gsoAsc));
   fGridDataFilterSort.Sort;
   CheckEquals(fGridDataFilterSort.Seek1(BuildArray(38)), 19);
 end;
 
-procedure TestTxnGridLinkSort.Test_SeekActual_39_Not_Found;
+procedure TestTxnGridLinkSampleGridData.Test_SeekActual_39_Not_Found;
 begin
   fGridSortItems.Add(TxnGridSortItem.Create(0, gskNum, gsoAsc));
   fGridDataFilterSort.Sort;
   CheckEquals(fGridDataFilterSort.Seek1(BuildArray(39)), -1);
 end;
 
-procedure TestTxnGridLinkSort.Test_Sort_Column_0_Num_Asc_Ok;
+procedure TestTxnGridLinkSampleGridData.Test_Sort_Column_0_Num_Asc_Ok;
 begin
   fGridSortItems.Add(TxnGridSortItem.Create(0, gskNum, gsoAsc));
   fGridDataFilterSort.Sort;
   CheckEquals('0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36,38,', fGridDataFilterSort.AsDebug);
 end;
 
-procedure TestTxnGridLinkSort.Test_Sort_Column_0_Num_Desc_Ok;
+procedure TestTxnGridLinkSampleGridData.Test_Sort_Column_0_Num_Desc_Ok;
 begin
   fGridSortItems.Add(TxnGridSortItem.Create(0, gskNum, gsoDesc));
   fGridDataFilterSort.Sort;
   CheckEquals('38,36,34,32,30,28,26,24,22,20,18,16,14,12,10,8,6,4,2,0,', fGridDataFilterSort.AsDebug);
 end;
 
-procedure TestTxnGridLinkSort.Test_Sort_Column_0_Str_Asc_Ok;
+procedure TestTxnGridLinkSampleGridData.Test_Sort_Column_0_Str_Asc_Ok;
 begin
   fGridSortItems.Add(TxnGridSortItem.Create(0, gskStr, gsoAsc));
   fGridDataFilterSort.Sort;
   CheckEquals('0,10,12,14,16,18,2,20,22,24,26,28,30,32,34,36,38,4,6,8,', fGridDataFilterSort.AsDebug);
 end;
 
-procedure TestTxnGridLinkSort.Test_Sort_Column_0_Str_Desc_Ok;
+procedure TestTxnGridLinkSampleGridData.Test_Sort_Column_0_Str_Desc_Ok;
 begin
   fGridSortItems.Add(TxnGridSortItem.Create(0, gskStr, gsoDesc));
   fGridDataFilterSort.Sort;
   CheckEquals('8,6,4,38,36,34,32,30,28,26,24,22,20,2,18,16,14,12,10,0,', fGridDataFilterSort.AsDebug);
 end;
 
-procedure TestTxnGridLinkSort.Test_Sort_Column_2_Str_Asc_Column_0_Num_Desc_Ok;
+procedure TestTxnGridLinkSampleGridData.Test_Sort_Column_2_Str_Asc_Column_0_Num_Desc_Ok;
 begin
   fGridSortItems.Add(TxnGridSortItem.Create(2, gskStr, gsoAsc));
   fGridSortItems.Add(TxnGridSortItem.Create(0, gskNum, gsoDesc));
@@ -242,7 +254,7 @@ begin
   CheckEquals('30,34,38,12,8,2,0,26,32,28,6,36,10,20,24,14,18,16,4,22,', fGridDataFilterSort.AsDebug);
 end;
 
-procedure TestTxnGridLinkSort.Test_Sort_Column_3_Num_Asc_Column_0_Num_Desc_Ok;
+procedure TestTxnGridLinkSampleGridData.Test_Sort_Column_3_Num_Asc_Column_0_Num_Desc_Ok;
 begin
   fGridSortItems.Add(TxnGridSortItem.Create(3, gskNum, gsoAsc));
   fGridSortItems.Add(TxnGridSortItem.Create(0, gskNum, gsoDesc));
@@ -250,18 +262,26 @@ begin
   CheckEquals('20,0,10,6,38,22,12,8,14,26,18,16,28,36,30,2,34,32,24,4,', fGridDataFilterSort.AsDebug);
 end;
 
-procedure TestTxnGridLinkSort.Test_Value_0_0;
+procedure TestTxnGridLinkSampleGridData.Test_Value_0_0;
 begin
   CheckEquals('0', fGridDataFilterSort.ValueString(0, 0));
 end;
 
-procedure TestTxnGridLinkSort.Test_Value_3_15;
+procedure TestTxnGridLinkSampleGridData.Test_Value_3_15;
 begin
   CheckEquals('3,76', fGridDataFilterSort.ValueString(3, 15));
 end;
 
+{ TestTxnGridLinkSampleGridList }
+
+procedure TestTxnGridLinkSampleGridList.GridDataCreate;
+begin
+  fGridData := TSampleGridDataList.Create;
+end;
+
 initialization
 
-RegisterTest(TestTxnGridLinkSort.Suite);
+RegisterTest(TestTxnGridLinkSampleGridData.Suite);
+//RegisterTest(TestTxnGridLinkSampleGridList.Suite);
 
 end.

@@ -22,6 +22,8 @@ type
   IxnGridSortItems = IxnList<TxnGridSortItem>;
   TxnGridSortItems = TxnList<TxnGridSortItem>;
 
+  // ********************************************************************************
+  // ********************************************************************************
   TxnGridFilterItem = record
   type
     TCase = (gfcCaseSensitive, gfcCaseInsensitive);

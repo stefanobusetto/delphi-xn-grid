@@ -1,9 +1,9 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
-        <ProjectGuid>{B1E1B678-E19C-41DC-B9E9-DE8477D5CC55}</ProjectGuid>
+        <ProjectGuid>{FC05702F-55EB-4BAC-9A87-E3FDB46F0404}</ProjectGuid>
         <ProjectVersion>15.4</ProjectVersion>
         <FrameworkType>VCL</FrameworkType>
-        <MainSource>TestLink.dpr</MainSource>
+        <MainSource>TestObserver.dpr</MainSource>
         <Base>True</Base>
         <Config Condition="'$(Config)'==''">Debug</Config>
         <Platform Condition="'$(Platform)'==''">Win32</Platform>
@@ -40,10 +40,9 @@
         <Base>true</Base>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
-        <VCL_Custom_Styles>Luna|VCLSTYLE|$(PUBLIC)\Documents\Embarcadero\Studio\14.0\Styles\Luna.vsf;Silver|VCLSTYLE|$(PUBLIC)\Documents\Embarcadero\Studio\14.0\Styles\Silver.vsf</VCL_Custom_Styles>
-        <SanitizedProjectName>TestLink</SanitizedProjectName>
-        <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;$(DCC_Namespace)</DCC_Namespace>
         <Icon_MainIcon>$(BDS)\bin\delphi_PROJECTICON.ico</Icon_MainIcon>
+        <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;$(DCC_Namespace)</DCC_Namespace>
+        <SanitizedProjectName>TestObserver</SanitizedProjectName>
         <DCC_DcuOutput>.\$(Platform)\$(Config)</DCC_DcuOutput>
         <DCC_ExeOutput>.\$(Platform)\$(Config)</DCC_ExeOutput>
         <DCC_E>false</DCC_E>
@@ -53,12 +52,12 @@
         <DCC_K>false</DCC_K>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win32)'!=''">
-        <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
+        <DCC_Namespace>Winapi;System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
+        <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
+        <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
         <DCC_UsePackage>SMImportXE6;cxGridRS20;gtQRExpD19;FireDACSqliteDriver;cxPageControlRS20;DBXSqliteDriver;FireDACPgDriver;fmx;IndySystem;TeeDB;tethering;inetdbbde;vclib;DBXInterBaseDriver;xnGridDesign;dxmdsRS20;DbxCommonDriver;dxLayoutControlRS20;vclimg;crcontrols200;BarcodeStudio;dbxcds;MetropolisUILiveTile;vcldb;vcldsnap;cxPivotGridChartRS20;fmxFireDAC;dacvcl200;CustomIPTransport;SMExportXE6;cxExportRS20;vclribbon;dxServerModeRS20;dsnap;IndyIPServer;fmxase;vcl;IndyCore;dacfmx200;dxComnRS20;IndyIPCommon;CloudService;FmxTeeUI;dxDBXServerModeRS20;FireDACIBDriver;xnGrid;xComponents;xnExperts;soapserver;inetdbxpress;dxADOServerModeRS20;BarcodeQuickReport;xComponentsDesign;dsnapxml;cxPivotGridRS20;adortl;FireDACASADriver;cxPivotGridOLAPRS20;BarcodeStudioEditors;bindcompfmx;vcldbx;FireDACODBCDriver;RESTBackendComponents;rtl;dbrtl;DbxClientDriver;dclZipForged20;FireDACCommon;bindcomp;inetdb;plandXE6;PKIECtrl20;dac200;Tee;FmxPackage;msprovider200;vclFireDAC;Tee9QR5D18;CPortLibDXE;xComponentsCr;xmlrtl;svnui;ibxpress;ActiveX;vclZipForged20;IndyProtocols;DBXMySQLDriver;FireDACCommonDriver;vclactnband;bindengine;bindcompdbx;soaprtl;FMXTee;dxGDIPlusRS20;bindcompvcl;TeeUI;unidacvcl200;vclie;QR506RunDXE6W64;cxVerticalGridRS20;unidacfmx200;FireDACADSDriver;vcltouch;cxEditorsRS20;unidac200;VclSmp;FireDAC;VCLRESTComponents;ixComponents;DeployAndBackupExpert;gtPDFkitDXE6ProP;dsnapcon;inet;cxLibraryRS20;cxDataRS20;fmxobj;FireDACMySQLDriver;soapmidas;vclx;gtDocEngD20;dxCoreRS20;svn;fmxdae;RESTComponents;bdertl;dxThemeRS20;FireDACMSAccDriver;cxTreeListRS20;dbexpress;IndyIPClient;$(DCC_UsePackage)</DCC_UsePackage>
         <VerInfo_Locale>1033</VerInfo_Locale>
-        <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
-        <DCC_Namespace>Winapi;System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win64)'!=''">
         <DCC_UsePackage>cxGridRS20;FireDACSqliteDriver;cxPageControlRS20;DBXSqliteDriver;FireDACPgDriver;fmx;IndySystem;TeeDB;tethering;vclib;DBXInterBaseDriver;dxmdsRS20;DbxCommonDriver;dxLayoutControlRS20;vclimg;dbxcds;MetropolisUILiveTile;vcldb;vcldsnap;cxPivotGridChartRS20;fmxFireDAC;CustomIPTransport;cxExportRS20;vclribbon;dxServerModeRS20;dsnap;IndyIPServer;fmxase;vcl;IndyCore;dxComnRS20;IndyIPCommon;CloudService;FmxTeeUI;dxDBXServerModeRS20;FireDACIBDriver;xComponents;soapserver;inetdbxpress;dxADOServerModeRS20;dsnapxml;cxPivotGridRS20;adortl;FireDACASADriver;cxPivotGridOLAPRS20;bindcompfmx;FireDACODBCDriver;RESTBackendComponents;rtl;dbrtl;DbxClientDriver;FireDACCommon;bindcomp;inetdb;plandXE6;PKIECtrl20;Tee;vclFireDAC;Tee9QR5D18;CPortLibDXE;xmlrtl;ibxpress;IndyProtocols;DBXMySQLDriver;FireDACCommonDriver;vclactnband;bindengine;bindcompdbx;soaprtl;FMXTee;dxGDIPlusRS20;bindcompvcl;TeeUI;vclie;QR506RunDXE6W64;cxVerticalGridRS20;FireDACADSDriver;vcltouch;cxEditorsRS20;VclSmp;FireDAC;VCLRESTComponents;dsnapcon;inet;cxLibraryRS20;cxDataRS20;fmxobj;FireDACMySQLDriver;soapmidas;vclx;dxCoreRS20;fmxdae;RESTComponents;dxThemeRS20;FireDACMSAccDriver;cxTreeListRS20;dbexpress;IndyIPClient;$(DCC_UsePackage)</DCC_UsePackage>
@@ -72,8 +71,6 @@
         <DCC_RemoteDebug>true</DCC_RemoteDebug>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
-        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
-        <VerInfo_Locale>1033</VerInfo_Locale>
         <DCC_RemoteDebug>false</DCC_RemoteDebug>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2)'!=''">
@@ -90,6 +87,9 @@
             <Form>Form1</Form>
             <FormType>dfm</FormType>
         </DCCReference>
+        <DCCReference Include="cSampleDataset.pas"/>
+        <DCCReference Include="cDatasource.pas"/>
+        <DCCReference Include="xn.dataset.cache.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -108,13 +108,8 @@
         <BorlandProject>
             <Delphi.Personality>
                 <Source>
-                    <Source Name="MainSource">TestLink.dpr</Source>
+                    <Source Name="MainSource">TestObserver.dpr</Source>
                 </Source>
-                <Excluded_Packages>
-                    <Excluded_Packages Name="$(BDSBIN)\DataExplorerDBXPlugin200.bpl">DBExpress Data Explorer Integration</Excluded_Packages>
-                    <Excluded_Packages Name="$(BDSBIN)\dcloffice2k200.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
-                    <Excluded_Packages Name="$(BDSBIN)\dclofficexp200.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
-                </Excluded_Packages>
             </Delphi.Personality>
             <Deployment/>
             <Platforms>
