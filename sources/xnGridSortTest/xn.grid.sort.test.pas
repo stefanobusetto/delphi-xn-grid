@@ -64,7 +64,7 @@ type
 
   TestTxnGridLinkSampleGridList = class(TestTxnGridLinkSampleGridData)
   public
-    procedure GridDataCreate;
+    procedure GridDataCreate; override;
   end;
 
 implementation

@@ -4,7 +4,10 @@ uses
   Vcl.Forms,
   Main in 'Main.pas' {Form1},
   Vcl.Themes,
-  Vcl.Styles;
+  Vcl.Styles,
+  uBitmaps in 'uBitmaps.pas',
+  xn.grid.link.sample in 'xn.grid.link.sample.pas',
+  uCommands in 'uCommands.pas';
 
 {$R *.res}
 

@@ -3,34 +3,15 @@ unit xn.grid;
 interface
 
 uses Generics.Collections,
-  Vcl.Controls, Vcl.Grids, Vcl.Themes, Vcl.Graphics, Vcl.GraphUtil,
-  System.SysUtils, System.Classes, System.Math, System.UITypes,
-  Windows,
-  xn.grid.data, xn.grid.common;
+  Vcl.Styles, Vcl.Controls, Vcl.Grids, Vcl.Themes, Vcl.Graphics, Vcl.GraphUtil, Vcl.ExtCtrls,
+  System.SysUtils, System.Classes, System.Math, System.UITypes, Windows,
+  xn.grid.data, xn.grid.common, xn.grid.link.sample;
 
 type
   TxnGrid = class;
 
-  TxnGridLink = class(TInterfacedObject, IxnGridLink)
-  strict private
-    fGrid: TxnGrid;
-    fItems: TList<string>;
-  public
-    constructor Create(aGrid: TxnGrid);
-    destructor Destroy; override;
-    procedure Append(aString: string);
-    procedure Insert(aIndex: integer; aString: string);
-    procedure Change(aIndex: integer; aString: string);
-    procedure Delete(aIndex: integer);
-
-    function RowCount: LongInt;
-    function AsDebug: string;
-    function ValueString(aCol, aRow: LongInt): String;
-    function ValueFloat(aCol, aRow: LongInt): Double;
-  end;
-
-  TxnGridColumnNotify = procedure(aIndex: integer) of object;
-  TxnGridRowNotify = procedure(aIndex: integer) of object;
+  TxnGridColNotify = procedure(aIndex: integer) of object;
+  // TxnGridRowNotify = procedure(aIndex: integer) of object;
 
   TxnGridColumn = class(TCollectionItem)
   strict private
@@ -53,9 +34,9 @@ type
     function ItemGet(aIndex: integer): TxnGridColumn;
     procedure ItemSet(aIndex: integer; aValue: TxnGridColumn);
   private
-    fOnColAdd: TxnGridColumnNotify;
-    fOnColDelete: TxnGridColumnNotify;
-    fOnColChange: TxnGridColumnNotify;
+    fOnColAdd: TxnGridColNotify;
+    fOnColDel: TxnGridColNotify;
+    fOnColEdit: TxnGridColNotify;
   public
     constructor Create(AOwner: TPersistent; ItemClass: TCollectionItemClass);
     property Items[aIndex: integer]: TxnGridColumn read ItemGet write ItemSet; default;
@@ -66,6 +47,7 @@ type
     fLink: IxnGridLink;
     fLog: TStrings;
     fColumns: TxnGridColumns;
+
     procedure OptionsEditingSet(aValue: Boolean);
     function OptionsEditingGet: Boolean;
     procedure ColumnsSet(aValue: TxnGridColumns);
@@ -73,43 +55,55 @@ type
     procedure LogSet(aValue: TStrings);
     function LogGet: TStrings;
     procedure LogString(aString: String);
-
   protected
     procedure OnColAdd(aIndex: integer);
-    procedure OnColDelete(aIndex: integer);
-    procedure OnColChange(aIndex: integer);
+    procedure OnColDel(aIndex: integer);
+    procedure OnColEdit(aIndex: integer);
 
     procedure OnRowAdd(aIndex: integer);
-    procedure OnRowDelete(aIndex: integer);
-    procedure OnRowChange(aIndex: integer);
+    procedure OnRowDel(aIndex: integer);
+    procedure OnRowEdit(aIndex: integer);
 
     procedure InvalidateRowsFrom(aIndex: integer);
     procedure InvalidateColsFrom(aIndex: integer);
 
     procedure DrawCell(aCol, aRow: LongInt; ARect: TRect; AState: TGridDrawState); override;
-  public
-    constructor Create(AOwner: TComponent); override;
-    destructor Destroy; override;
-    procedure InvalidateCell(aCol, aRow: integer);
-    procedure InvalidateRow(aRow: integer);
-    procedure InvalidateCol(aCol: integer);
-    procedure InvalidateGrid;
+
+    procedure OnSelectCell_(Sender: TObject; aCol, aRow: LongInt; var CanSelect: Boolean);
 
     procedure RowCountSet(aValue: LongInt);
     function RowCountGet: LongInt;
     procedure ColCountSet(aValue: LongInt);
     function ColCountGet: LongInt;
 
+    // procedure RowSet(aValue: LongInt);
+    // function RowGet: LongInt;
+    // procedure ColSet(aValue: LongInt);
+    // function ColGet: LongInt;
+  public
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
+
+    procedure InvalidateGrid;
+    procedure InvalidateRow(aRow: integer);
+    procedure InvalidateCol(aCol: integer);
+    procedure InvalidateCell(aCol, aRow: integer);
+
     procedure LogLink;
+
+    procedure OnRecNo(aIndex: integer);
   published
     property Log: TStrings read LogGet write LogSet;
     property Columns: TxnGridColumns read ColumnsGet write ColumnsSet;
     property OptionsEditing: Boolean read OptionsEditingGet write OptionsEditingSet;
 
-    property Link: IxnGridLink read fLink;
+    property link: IxnGridLink read fLink;
 
-    property ColCount: LongInt read ColCountGet write ColCountSet;
-    property RowCount: LongInt read RowCountGet write RowCountSet;
+    // property Row: LongInt read RowGet write RowSet;
+    // property Col: LongInt read ColGet write ColSet;
+
+    // property ColCount: LongInt read ColCountGet write ColCountSet;
+    // property RowCount: LongInt read RowCountGet write RowCountSet;
   end;
 
 implementation
@@ -135,30 +129,43 @@ procedure TxnGrid.ColCountSet(aValue: integer);
 begin
   if aValue <> RowCount then
   begin
+    if aValue < 1 then
+      aValue := 1;
+
     inherited ColCount := aValue;
     FixedCols := IfThen(aValue > 1, 1, 0);
+
+    ColWidths[0] := 11;
   end;
 end;
 
 constructor TxnGrid.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
+  OnSelectCell := OnSelectCell_;
+
   DefaultDrawing := True;
 
   fLog := nil;
-  fLink := TxnGridLink.Create(Self);
+  fLink := TxnGridLinkSample.Create;
+  fLink.OnRowAdd := OnRowAdd;
+  fLink.OnRowDel := OnRowDel;
+  fLink.OnRowEdit := OnRowEdit;
+  fLink.OnRecNo := OnRecNo;
+
   fColumns := TxnGridColumns.Create(Self, TxnGridColumn);
+
+  Font.Size := 10;
+
+  DefaultColWidth := 40;
+  DefaultRowHeight := 20; // Canvas.TextHeight('Wg') * 2 ;
+
   ColCountSet(1);
-  RowCountSet(1);
-
-  DefaultColWidth := DefaultColWidth * 3 div 2 - 4;
-  DefaultRowHeight := DefaultRowHeight * 3 div 2;
-
   RowCountSet(fLink.RowCount());
 
   fColumns.fOnColAdd := OnColAdd;
-  fColumns.fOnColDelete := OnColDelete;
-  fColumns.fOnColChange := OnColChange;
+  fColumns.fOnColDel := OnColDel;
+  fColumns.fOnColEdit := OnColEdit;
 end;
 
 destructor TxnGrid.Destroy;
@@ -178,25 +185,19 @@ var
   v: string;
   f: Cardinal;
 
-  LStyle: TCustomStyleServices;
-  LColor: TColor;
-  LineColor: TColor;
-  LFixedColor: TColor;
-  LFixedBorderColor: TColor;
+//  LStyle: TCustomStyleServices;
+//  LColor: TColor;
+//  LineColor: TColor;
+//  LFixedColor: TColor;
+//  LFixedBorderColor: TColor;
 
 begin
-//  if aCol = 0 then
-//    exit;
-//  if aRow = 0 then
-//    exit;
+  if aCol = 0 then
+    exit;
+  if aRow = 0 then
+    exit;
 
-//  v := fLink.ValueString(aCol - 1, aRow - 1) + ' ' +
-//    fLink.ValueString(aCol - 1, aRow - 1) + ' ' +
-//    fLink.ValueString(aCol - 1, aRow - 1) + ' ' +
-//    fLink.ValueString(aCol - 1, aRow - 1) + ' ';
-
-    v:='x';
-
+  v := fLink.ValueString(aCol - 1, aRow - 1);
 
   {
     FInternalColor := Color;
@@ -257,7 +258,7 @@ begin
     f := DT_SINGLELINE; // or DT_VCENTER;
 
   r := ARect;
-  r.Top := r.Top + 0;
+  r.Top := r.Top + 2;
   r.Left := r.Left + 3;
   r.Right := r.Right - 2;
   r.Bottom := r.Bottom - 3;
@@ -271,13 +272,15 @@ begin
   // f := f or DT_CENTER;
   // end;
 
-//  if aRow = 0 then
-//  begin
-DrawCellBackground(ARect, 0, [gdFixed], aCol, aRow);
-//  end;
+  // if aRow = 0 then
+  // begin
+  //
+  // end;
 
-    Canvas.Brush.Color := clLtGray;
-     Canvas.FillRect(r) ;
+  // Canvas.Brush.Color := clRed;
+  // Canvas.FillRect(r) ;
+
+  // DrawCellBackground(ARect, clGray, [gdFixed], aCol, aRow);
 
   DrawText(Canvas.Handle, PChar(v), Length(v), r, f);
 
@@ -355,29 +358,39 @@ begin
   ColCountSet(fColumns.Count + 1);
 end;
 
-procedure TxnGrid.OnColChange(aIndex: integer);
+procedure TxnGrid.OnColEdit(aIndex: integer);
 begin
 end;
 
-procedure TxnGrid.OnColDelete(aIndex: integer);
+procedure TxnGrid.OnColDel(aIndex: integer);
 begin
   FixedCols := IfThen(fColumns.Count > 0, 1, 0);
+end;
+
+procedure TxnGrid.OnRecNo(aIndex: integer);
+begin
+  if aIndex <> Row then
+  begin
+    LogString(Format('OnRecNo(%d);', [aIndex]));
+    Row := aIndex;
+  end;
 end;
 
 procedure TxnGrid.OnRowAdd(aIndex: integer);
 begin
   LogString(Format('OnRowAdd(%d);', [aIndex]));
   RowCountSet(fLink.RowCount + 1);
+  OnRecNo(aIndex + 1);
   InvalidateRowsFrom(aIndex + 1);
 end;
 
-procedure TxnGrid.OnRowChange(aIndex: integer);
+procedure TxnGrid.OnRowEdit(aIndex: integer);
 begin
-  LogString(Format('OnRowChange(%d);', [aIndex]));
+  LogString(Format('OnRowEdit(%d);', [aIndex]));
   InvalidateRow(aIndex + 1);
 end;
 
-procedure TxnGrid.OnRowDelete(aIndex: integer);
+procedure TxnGrid.OnRowDel(aIndex: integer);
 begin
   LogString(Format('OnRowDelete(%d);', [aIndex]));
   RowCountSet(fLink.RowCount + 1);
@@ -406,12 +419,52 @@ procedure TxnGrid.RowCountSet(aValue: integer);
 begin
   if aValue <> RowCount then
   begin
+    if aValue < 2 then
+      aValue := 2;
+
     inherited RowCount := aValue;
     FixedRows := IfThen(aValue > 1, 1, 0);
 
-    // InvalidateRowsFrom(aValue);
+    RowHeights[0] := 17;
   end;
 end;
+
+procedure TxnGrid.OnSelectCell_(Sender: TObject; aCol, aRow: integer; var CanSelect: Boolean);
+begin
+  LogString(aCol.ToString() + '.' + aRow.ToString());
+
+  if aRow <> fLink.RecNo then
+  begin
+    LogString(Format('RecNoSet(%d);', [aRow]));
+    fLink.RecNo := aRow;
+  end;
+end;
+
+// function TxnGrid.RowGet: LongInt;
+// begin
+// Result := inherited Row
+// end;
+//
+// procedure TxnGrid.RowSet(aValue: integer);
+// begin
+// if aValue <> Row then
+// begin
+// inherited Row := aValue;
+// end;
+// end;
+
+// function TxnGrid.ColGet: LongInt;
+// begin
+// Result := inherited Col
+// end;
+//
+// procedure TxnGrid.ColSet(aValue: integer);
+// begin
+// if aValue <> Col then
+// begin
+// inherited Col := aValue;
+// end;
+// end;
 
 { TxnGridColumns }
 
@@ -419,8 +472,8 @@ constructor TxnGridColumns.Create(AOwner: TPersistent; ItemClass: TCollectionIte
 begin
   inherited Create(AOwner, ItemClass);
   fOnColAdd := nil;
-  fOnColDelete := nil;
-  fOnColChange := nil;
+  fOnColDel := nil;
+  fOnColEdit := nil;
 end;
 
 function TxnGridColumns.ItemGet(aIndex: integer): TxnGridColumn;
@@ -431,76 +484,6 @@ end;
 procedure TxnGridColumns.ItemSet(aIndex: integer; aValue: TxnGridColumn);
 begin
   inherited SetItem(aIndex, aValue);
-end;
-
-{ TxnGridLink }
-
-procedure TxnGridLink.Append(aString: string);
-begin
-  fItems.add(aString);
-  fGrid.OnRowAdd(RowCount - 1);
-end;
-
-procedure TxnGridLink.Insert(aIndex: integer; aString: string);
-begin
-  fItems.Insert(aIndex, aString);
-  fGrid.OnRowAdd(aIndex);
-end;
-
-procedure TxnGridLink.Delete(aIndex: integer);
-begin
-  fItems.Delete(aIndex);
-  fGrid.OnRowDelete(aIndex);
-end;
-
-function TxnGridLink.AsDebug: string;
-var
-  s: string;
-begin
-  Result := '';
-  for s in fItems do
-    Result := Result + s + '#'
-end;
-
-procedure TxnGridLink.Change(aIndex: integer; aString: string);
-begin
-  fItems[aIndex] := aString;
-  fGrid.OnRowChange(aIndex);
-end;
-
-constructor TxnGridLink.Create(aGrid: TxnGrid);
-begin
-  Assert(aGrid <> nil);
-  fGrid := aGrid;
-
-  fItems := TList<string>.Create;
-end;
-
-destructor TxnGridLink.Destroy;
-begin
-  fItems.Clear;
-  fItems.Free;
-  inherited;
-end;
-
-function TxnGridLink.RowCount: LongInt;
-begin
-  Result := fItems.Count;
-end;
-
-function TxnGridLink.ValueFloat(aCol, aRow: integer): Double;
-begin
-  Result := StrToFloat(ValueString(aCol, aRow));
-end;
-
-function TxnGridLink.ValueString(aCol, aRow: LongInt): String;
-begin
-  if aRow < 0 then
-    exit('');
-  if aRow >= fItems.Count then
-    exit('');
-
-  Result := fItems[aRow] + '(' + aCol.ToString() + '.' + aRow.ToString() + ')'
 end;
 
 { TxnGridColumn }
@@ -519,8 +502,8 @@ destructor TxnGridColumn.Destroy;
 begin
   if Collection <> nil then
     if Collection is TxnGridColumns then
-      if Assigned(TxnGridColumns(Collection).fOnColDelete) then
-        TxnGridColumns(Collection).fOnColDelete(Self.Index);
+      if Assigned(TxnGridColumns(Collection).fOnColDel) then
+        TxnGridColumns(Collection).fOnColDel(Self.Index);
 
   inherited Destroy;
 end;
@@ -538,10 +521,10 @@ begin
 
     if Collection <> nil then
       if Collection is TxnGridColumns then
-        if Assigned(TxnGridColumns(Collection).fOnColChange) then
+        if Assigned(TxnGridColumns(Collection).fOnColEdit) then
         begin
-          TxnGridColumns(Collection).fOnColChange(IndexOld);
-          TxnGridColumns(Collection).fOnColChange(IndexNew);
+          TxnGridColumns(Collection).fOnColEdit(IndexOld);
+          TxnGridColumns(Collection).fOnColEdit(IndexNew);
         end;
   end;
 end;
