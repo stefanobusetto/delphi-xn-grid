@@ -60,13 +60,14 @@ uses xn.timers, System.Math;
 {$R *.dfm}
 
 
-procedure BitmapCompare;
+function BitmapCompare: integer;
 var
   bb: TBitmap;
   b1: TBitmap;
   b2: TBitmap;
   c: TBitmapCompareResult;
 begin
+  result := 9999;
   bb := TBitmap.Create;
   try
     bb.Width := 1;
@@ -95,6 +96,7 @@ begin
           Form1.DbGridImage.Picture.Bitmap.Assign(b2);
           Form1.DiffImage.Picture.Bitmap.Assign(c.Bitmap);
           Form1.DiffCount.Caption := c.Count.ToString();
+          result := c.Count;
         end;
       finally
         c.Bitmap.Free
@@ -109,7 +111,15 @@ end;
 
 procedure AfterCommand;
 begin
-  BitmapCompare();
+  if BitmapCompare() > 50 then
+    raise Exception.Create('Bitmap compare error.');
+
+  if Form1.cds0.RecordCount <> Form1.xnGrid1.link.RowCount then
+    raise Exception.Create('RecordCount() error.');
+
+  // if Form1.cds0.RecNo <> Form1.xnGrid1.link.RecNo + 1 then
+  // raise Exception.Create('RecNo() error.');
+
   Form1.xnGrid1.LogLink;
 
   Form1.xnGrid1_RecNo.Caption := Form1.xnGrid1.link.RecNo.ToString();
@@ -126,20 +136,14 @@ end;
 
 procedure TForm1.bt_deleteClick(Sender: TObject);
 begin
-  if xnGrid1.link.RowCount > xnGrid1.link.RecNo - 1 then
-  begin
-    uCommands.delete;
-    AfterCommand;
-  end;
+  uCommands.delete;
+  AfterCommand;
 end;
 
 procedure TForm1.bt_editClick(Sender: TObject);
 begin
-  if xnGrid1.link.RowCount > xnGrid1.link.RecNo - 1 then
-  begin
-    uCommands.Edit(NewId());
-    AfterCommand;
-  end;
+  uCommands.Edit(NewId());
+  AfterCommand;
 end;
 
 procedure TForm1.bt_fillClick(Sender: TObject);
@@ -158,8 +162,15 @@ begin
 end;
 
 procedure TForm1.Button1Click(Sender: TObject);
+var
+  i: integer;
 begin
-AfterCommand
+  for i := 0 to 50 do
+  begin
+    Execute(RandCommand());
+    Application.ProcessMessages;
+    AfterCommand;
+  end;
 end;
 
 procedure TForm1.btBitmapCompareClick(Sender: TObject);

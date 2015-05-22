@@ -12,12 +12,15 @@ procedure Init(aLink: IxnGridLink; aDataSet: TDataSet);
 procedure Append(aValue: string);
 procedure Insert(aValue: string);
 procedure Edit(aValue: string);
-procedure Edit1(aValue: string);
 procedure Delete;
+
+function RandCommand: String;
+
+procedure Execute(aCommand: String);
 
 implementation
 
-uses System.SysUtils;
+uses System.SysUtils, System.Math;
 
 const
   LINK_NIL = 'Link not assigned!';
@@ -57,6 +60,9 @@ end;
 
 procedure Append(aValue: string);
 begin
+  if fLink.RecNo > 10 then
+    Exit;
+
   Asserts;
   fLink.Append(aValue);
 
@@ -67,8 +73,14 @@ end;
 
 procedure Insert(aValue: string);
 begin
+  if fLink.RecNo > 10 then
+    Exit;
+
   Asserts;
-  fLink.Insert(fLink.RecNo - 1, aValue);
+  if fLink.RecNo < 0 then
+    fLink.Insert(0, aValue)
+  else
+    fLink.Insert(fLink.RecNo, aValue);
 
   fDataSet.Insert;
   DatasetValues(aValue);
@@ -77,27 +89,61 @@ end;
 
 procedure Edit(aValue: string);
 begin
+  if fLink.RowCount = 0 then
+    Exit;
+
   Asserts;
-  fLink.Edit(fLink.RecNo - 1, aValue);
+  fLink.Edit(fLink.RecNo, aValue);
 
   fDataSet.Edit;
   DatasetValues(aValue);
   fDataSet.Post;
 end;
 
-procedure Edit1(aValue: string);
-begin
-  Asserts;
-  fLink.Edit(1, aValue);
-end;
-
 procedure Delete;
 begin
-  Assert(fLink <> nil, LINK_NIL);
-  fLink.Delete(fLink.RecNo - 1);
+  if fLink.RowCount = 0 then
+    Exit;
 
-  Assert(fDataSet <> nil, DATASET_NIL);
+  Asserts;
+  fLink.Delete(fLink.RecNo);
+
   fDataSet.Delete;
+end;
+
+function RandNumber: Integer;
+begin
+  Result := RandomRange(1, 4);
+end;
+
+function RandCommand: String;
+begin
+  case RandNumber() of
+    1:
+      Exit('a');
+    2:
+      Exit('i');
+    3:
+      Exit('d');
+    4:
+      Exit('e');
+  else
+    raise Exception.Create('Invalid Number');
+  end;
+end;
+
+procedure Execute(aCommand: String);
+begin
+  if SameText(aCommand, 'a') then
+    Append(NewId())
+  else if SameText(aCommand, 'i') then
+    Insert(NewId())
+  else if SameText(aCommand, 'd') then
+    Delete
+  else if SameText(aCommand, 'e') then
+    Edit(NewId())
+  else
+    raise Exception.Create('Invalid Execute');
 end;
 
 end.

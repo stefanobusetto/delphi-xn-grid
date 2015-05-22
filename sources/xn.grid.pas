@@ -185,11 +185,11 @@ var
   v: string;
   f: Cardinal;
 
-//  LStyle: TCustomStyleServices;
-//  LColor: TColor;
-//  LineColor: TColor;
-//  LFixedColor: TColor;
-//  LFixedBorderColor: TColor;
+  // LStyle: TCustomStyleServices;
+  // LColor: TColor;
+  // LineColor: TColor;
+  // LFixedColor: TColor;
+  // LFixedBorderColor: TColor;
 
 begin
   if aCol = 0 then
@@ -369,10 +369,11 @@ end;
 
 procedure TxnGrid.OnRecNo(aIndex: integer);
 begin
-  if aIndex <> Row then
+  if aIndex + 1 <> Row then
   begin
     LogString(Format('OnRecNo(%d);', [aIndex]));
-    Row := aIndex;
+    Row := aIndex + 1;
+    aIndex := aIndex + 1;
   end;
 end;
 
@@ -380,7 +381,7 @@ procedure TxnGrid.OnRowAdd(aIndex: integer);
 begin
   LogString(Format('OnRowAdd(%d);', [aIndex]));
   RowCountSet(fLink.RowCount + 1);
-  OnRecNo(aIndex + 1);
+  OnRecNo(aIndex);
   InvalidateRowsFrom(aIndex + 1);
 end;
 
@@ -394,6 +395,7 @@ procedure TxnGrid.OnRowDel(aIndex: integer);
 begin
   LogString(Format('OnRowDelete(%d);', [aIndex]));
   RowCountSet(fLink.RowCount + 1);
+  // OnRecNo(aIndex);
   InvalidateRowsFrom(aIndex + 1);
 end;
 
@@ -433,10 +435,10 @@ procedure TxnGrid.OnSelectCell_(Sender: TObject; aCol, aRow: integer; var CanSel
 begin
   LogString(aCol.ToString() + '.' + aRow.ToString());
 
-  if aRow <> fLink.RecNo then
+  if aRow - 1 <> fLink.RecNo then
   begin
-    LogString(Format('RecNoSet(%d);', [aRow]));
-    fLink.RecNo := aRow;
+    LogString(Format('RecNoSet(%d);', [aRow - 1]));
+    fLink.RecNo := aRow - 1;
   end;
 end;
 

@@ -66,23 +66,22 @@ end;
 procedure TxnGridLinkSample.Append(aString: string);
 begin
   fItems.Add(aString);
-  fRecNo := RowCount;
+  fRecNo := RowCount - 1;
   fOnRowAdd(RowCount - 1);
 end;
 
 procedure TxnGridLinkSample.Insert(aIndex: integer; aString: string);
 begin
-  if aIndex < 0 then
-    aIndex := 0;
-
   fItems.Insert(aIndex, aString);
-  fRecNo := aIndex + 1;
+  fRecNo := aIndex;
   fOnRowAdd(aIndex);
 end;
 
 procedure TxnGridLinkSample.Delete(aIndex: integer);
 begin
   fItems.Delete(aIndex);
+  if aIndex >= RowCount - 1 then
+    fRecNo := RowCount - 1;
   fOnRowDel(aIndex);
 end;
 
@@ -103,7 +102,7 @@ end;
 
 constructor TxnGridLinkSample.Create;
 begin
-  fRecNo := 0;
+  fRecNo := -1;
   fItems := TList<string>.Create;
 end;
 

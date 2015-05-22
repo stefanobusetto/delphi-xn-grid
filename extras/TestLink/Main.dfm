@@ -18,19 +18,19 @@ object Form1: TForm1
     Left = 843
     Top = 24
     Width = 184
-    Height = 337
+    Height = 513
   end
   object DbGridImage: TImage
     Left = 1033
     Top = 24
     Width = 184
-    Height = 337
+    Height = 513
   end
   object DiffImage: TImage
     Left = 1223
     Top = 24
     Width = 184
-    Height = 337
+    Height = 513
   end
   object Label1: TLabel
     Left = 843
@@ -55,14 +55,14 @@ object Form1: TForm1
   end
   object DiffCount: TLabel
     Left = 843
-    Top = 367
+    Top = 561
     Width = 46
     Height = 13
     Caption = 'DiffCount'
   end
   object xnGrid1_RecNo: TLabel
     Left = 159
-    Top = 351
+    Top = 559
     Width = 142
     Height = 25
     Caption = 'xnGrid1_RecNo'
@@ -75,7 +75,7 @@ object Form1: TForm1
   end
   object DbGrid1_RecNo: TLabel
     Left = 349
-    Top = 351
+    Top = 559
     Width = 146
     Height = 25
     Caption = 'DbGrid1_RecNo'
@@ -88,7 +88,7 @@ object Form1: TForm1
   end
   object xnGrid1_RecCount: TLabel
     Left = 159
-    Top = 382
+    Top = 590
     Width = 142
     Height = 25
     Caption = 'xnGrid1_RecNo'
@@ -101,7 +101,7 @@ object Form1: TForm1
   end
   object DbGrid1_RecCount: TLabel
     Left = 349
-    Top = 382
+    Top = 590
     Width = 146
     Height = 25
     Caption = 'DbGrid1_RecNo'
@@ -141,7 +141,7 @@ object Form1: TForm1
   end
   object btBitmapCompare: TButton
     Left = 843
-    Top = 386
+    Top = 580
     Width = 141
     Height = 25
     Caption = 'btBitmapCompare'
@@ -152,7 +152,7 @@ object Form1: TForm1
     Left = 349
     Top = 8
     Width = 184
-    Height = 337
+    Height = 529
     DataSource = d0
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -191,7 +191,7 @@ object Form1: TForm1
     Left = 159
     Top = 8
     Width = 184
-    Height = 337
+    Height = 529
     Columns = <
       item
         Alignment = taLeftJustify
@@ -243,8 +243,8 @@ object Form1: TForm1
     OnClick = bt_editClick
   end
   object Edit1: TEdit
-    Left = 40
-    Top = 232
+    Left = 8
+    Top = 163
     Width = 121
     Height = 21
     TabOrder = 9
