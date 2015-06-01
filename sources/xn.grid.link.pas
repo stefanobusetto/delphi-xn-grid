@@ -12,29 +12,22 @@ type
   public
     constructor Create(aGridData: IxnGridData; aFilterItems: IxnGridFilterItems; aSortItems: IxnGridSortItems);
     destructor Destroy; override;
-    procedure Clear; virtual;
     procedure Fill; virtual;
     procedure Sort; overload;
     function Seek1(aKeys: TArray<variant>): integer;
     function Seek2(aKeys: TArray<variant>): integer;
 
-    function RowCount: LongInt; virtual;
-    function AsDebug: string; virtual;
-    function ValueString(aCol, aRow: LongInt): String; virtual;
-    function ValueFloat(aCol, aRow: LongInt): Double; virtual;
+    function RowCount: integer; virtual;
+    function AsDebug: String; virtual;
+    function ValueString(aCol, aRow: integer): String; virtual;
+    function ValueFloat(aCol, aRow: integer): Double; virtual;
   end;
 
 implementation
 
-function TxnGridLink.AsDebug: string;
+function TxnGridLink.AsDebug: String;
 begin
   Result := fDataSort.AsDebug;
-end;
-
-procedure TxnGridLink.Clear;
-begin
-  fDataSort.Clear;
-  fDataFilter.Clear;
 end;
 
 constructor TxnGridLink.Create(aGridData: IxnGridData; aFilterItems: IxnGridFilterItems; aSortItems: IxnGridSortItems);
@@ -55,7 +48,7 @@ begin
   fDataSort.Fill;
 end;
 
-function TxnGridLink.RowCount: LongInt;
+function TxnGridLink.RowCount: integer;
 begin
   Result := fDataSort.RowCount;
 end;

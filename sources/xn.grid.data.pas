@@ -47,11 +47,10 @@ type
     fData: IxnGridData;
     fIndex: TList<integer>;
   public
-    procedure Clear; virtual;
-    function RowCount: LongInt; virtual;
-    function AsDebug: string; virtual;
-    function ValueString(aCol, aRow: LongInt): String; virtual;
-    function ValueFloat(aCol, aRow: LongInt): Double; virtual;
+    function RowCount: integer; virtual;
+    function AsDebug: String; virtual;
+    function ValueString(aCol, aRow: integer): String; virtual;
+    function ValueFloat(aCol, aRow: integer): Double; virtual;
   end;
 
   // ********************************************************************************
@@ -88,11 +87,7 @@ uses System.SysUtils;
 
 { TxnGridSortItem }
 
-constructor TxnGridSortItem.Create(aIndex: integer;
-  aKind:
-  TKind;
-  aOrder:
-  TOrder);
+constructor TxnGridSortItem.Create(aIndex: integer; aKind: TKind; aOrder: TOrder);
 begin
   fIndex := aIndex;
   fKind := aKind;
@@ -111,21 +106,15 @@ end;
 
 { TxnGridData }
 
-function TxnGridData.AsDebug: string;
+function TxnGridData.AsDebug: String;
 var
-  r: integer;
+  i: integer;
 begin
-  Result := '';
-  for r := 0 to RowCount - 1 do
-    Result := Result + ValueString(0, r) + ','
+  for i := 0 to fIndex.Count - 1 do
+    Result := Result + ValueString(0, i) + ',';
 end;
 
-procedure TxnGridData.Clear;
-begin
-  fIndex.Clear;
-end;
-
-function TxnGridData.RowCount: LongInt;
+function TxnGridData.RowCount: integer;
 begin
   Result := fIndex.Count
 end;

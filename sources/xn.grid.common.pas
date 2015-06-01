@@ -3,42 +3,81 @@ unit xn.grid.common;
 interface
 
 type
-  TxnGridOnRowAdd = procedure(aIndex: integer) of object;
-  TxnGridOnRowDel = procedure(aIndex: integer) of object;
-  TxnGridOnRowEdit = procedure(aIndex: integer) of object;
-  TxnGridOnRecNo = procedure(aIndex: integer) of object;
+  TxnGridNotifyData = record
+  type
+    TKind = (gekAdd, gekDel, gekEdit, gekMove);
+  private
+    fRow: Integer;
+    fCol: Integer;
+    fKind: TKind;
+  public
+    constructor Create(aCol, aRow: Integer; aKind: TKind);
+
+    property Row: Integer read fRow;
+    property Col: Integer read fCol;
+    property Kind: TKind read fKind;
+  end;
+
+  TxnGridColNotify = procedure(fData: TxnGridNotifyData) of object;
+  TxnGridLinkNotify = procedure(fData: TxnGridNotifyData) of object;
 
   IxnGridData = interface
     ['{D88DE50E-5A96-4955-B8C3-DD321FB97458}']
-    function RowCount: LongInt;
-    function AsDebug: string;
-    function ValueString(aCol, aRow: LongInt): String;
-    function ValueFloat(aCol, aRow: LongInt): Double;
+    function RowCount: Integer;
+    function AsDebug: String;
+    function ValueString(aCol, aRow: Integer): String;
+    function ValueFloat(aCol, aRow: Integer): Double;
   end;
 
   IxnGridLink = interface(IxnGridData)
     ['{6CDF8790-F13F-4507-9DB3-E173799CEAD4}']
+    procedure First;
+    procedure Last;
+    procedure Prior;
+    procedure Next;
+    procedure Clear;
     procedure Append(aString: string);
-    procedure Insert(aIndex: integer; aString: string);
-    procedure Edit(aIndex: integer; aString: string);
-    procedure Delete(aIndex: integer);
-
-    procedure RecNoSet(aIndex: integer);
-    function RecNoGet: integer;
-
-    procedure OnRowAddSet(aNotifyRowAdd: TxnGridOnRowAdd);
-    procedure OnRowDelSet(aNotifyRowAdd: TxnGridOnRowDel);
-    procedure OnRowEditSet(aNotifyRowEdit: TxnGridOnRowEdit);
-    procedure OnRecNoSet(aOnRecNo: TxnGridOnRecNo);
-
-    property OnRowAdd: TxnGridOnRowAdd write OnRowAddSet;
-    property OnRowDel: TxnGridOnRowDel write OnRowDelSet;
-    property OnRowEdit: TxnGridOnRowEdit write OnRowEditSet;
-    property OnRecNo: TxnGridOnRecNo write OnRecNoSet;
-
-    property RecNo: integer read RecNoGet write RecNoSet;
+    procedure Insert(aIndex: Integer; aString: string);
+    procedure Edit(aIndex: Integer; aString: string);
+    procedure Delete(aIndex: Integer);
+    procedure RecNoSet(aIndex: Integer);
+    function RecNoGet: Integer;
+    procedure NotifySet(aRowEvent: TxnGridLinkNotify);
+    property RecNo: Integer read RecNoGet write RecNoSet;
+    property Notify: TxnGridLinkNotify write NotifySet;
   end;
 
+function xnGridEventKindDes(aGridEventKind: TxnGridNotifyData.TKind): string;
+
+function xnGridNotifyDataCreateColEvent(aCol: Integer; aKind: TxnGridNotifyData.TKind): TxnGridNotifyData;
+function xnGridNotifyDataCreateLinkEvent(aRow: Integer; aKind: TxnGridNotifyData.TKind): TxnGridNotifyData;
+
 implementation
+
+uses System.Math, System.TypInfo;
+
+function xnGridEventKindDes(aGridEventKind: TxnGridNotifyData.TKind): string;
+begin
+  Result := GetEnumName(TypeInfo(TxnGridNotifyData.TKind), Ord(aGridEventKind));
+end;
+
+{ TxnGridNotifyData }
+
+constructor TxnGridNotifyData.Create(aCol, aRow: Integer; aKind: TKind);
+begin
+  fCol := aCol;
+  fRow := aRow;
+  fKind := aKind;
+end;
+
+function xnGridNotifyDataCreateColEvent(aCol: Integer; aKind: TxnGridNotifyData.TKind): TxnGridNotifyData;
+begin
+  Result.Create(aCol, -1, aKind);
+end;
+
+function xnGridNotifyDataCreateLinkEvent(aRow: Integer; aKind: TxnGridNotifyData.TKind): TxnGridNotifyData;
+begin
+  Result.Create(-1, aRow, aKind);
+end;
 
 end.

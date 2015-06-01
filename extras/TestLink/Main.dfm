@@ -2,7 +2,7 @@ object Form1: TForm1
   Left = 0
   Top = 0
   Caption = 'Form1'
-  ClientHeight = 671
+  ClientHeight = 847
   ClientWidth = 1417
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -12,6 +12,8 @@ object Form1: TForm1
   Font.Style = []
   OldCreateOrder = False
   OnActivate = FormActivate
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
   PixelsPerInch = 96
   TextHeight = 13
   object xnGridImage: TImage
@@ -54,67 +56,177 @@ object Form1: TForm1
     Caption = 'Differences'
   end
   object DiffCount: TLabel
-    Left = 843
-    Top = 561
-    Width = 46
-    Height = 13
+    Left = 903
+    Top = 563
+    Width = 67
+    Height = 19
     Caption = 'DiffCount'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
   end
   object xnGrid1_RecNo: TLabel
     Left = 159
-    Top = 559
-    Width = 142
-    Height = 25
+    Top = 8
+    Width = 110
+    Height = 19
     Caption = 'xnGrid1_RecNo'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -21
+    Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
   end
   object DbGrid1_RecNo: TLabel
     Left = 349
-    Top = 559
-    Width = 146
-    Height = 25
+    Top = 8
+    Width = 113
+    Height = 19
     Caption = 'DbGrid1_RecNo'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -21
+    Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
   end
   object xnGrid1_RecCount: TLabel
     Left = 159
-    Top = 590
-    Width = 142
-    Height = 25
+    Top = 30
+    Width = 110
+    Height = 19
     Caption = 'xnGrid1_RecNo'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -21
+    Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
   end
   object DbGrid1_RecCount: TLabel
     Left = 349
-    Top = 590
-    Width = 146
-    Height = 25
+    Top = 30
+    Width = 113
+    Height = 19
     Caption = 'DbGrid1_RecNo'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -21
+    Font.Height = -16
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+  end
+  object Label4: TLabel
+    Left = 8
+    Top = 8
+    Width = 57
+    Height = 19
+    Caption = 'RecNo()'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+  end
+  object Label5: TLabel
+    Left = 8
+    Top = 30
+    Width = 79
+    Height = 19
+    Caption = 'RecCount()'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+  end
+  object DiffMin: TLabel
+    Left = 1032
+    Top = 563
+    Width = 48
+    Height = 19
+    Caption = '+9999'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+  end
+  object DiffMax: TLabel
+    Left = 1036
+    Top = 587
+    Width = 42
+    Height = 19
+    Caption = '-9999'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+  end
+  object Label6: TLabel
+    Left = 994
+    Top = 563
+    Width = 37
+    Height = 19
+    Caption = 'Min()'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+  end
+  object Label7: TLabel
+    Left = 994
+    Top = 587
+    Width = 40
+    Height = 19
+    Caption = 'Max()'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+  end
+  object Differenze: TLabel
+    Left = 843
+    Top = 543
+    Width = 71
+    Height = 19
+    Caption = 'Differenze'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+  end
+  object Label8: TLabel
+    Left = 843
+    Top = 563
+    Width = 54
+    Height = 19
+    Caption = 'Count()'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
   end
   object bt_fill: TButton
     Left = 8
-    Top = 8
+    Top = 80
     Width = 75
     Height = 25
     Caption = 'bt_fill'
@@ -123,7 +235,7 @@ object Form1: TForm1
   end
   object bt_append: TButton
     Left = 8
-    Top = 132
+    Top = 204
     Width = 75
     Height = 25
     Caption = 'bt_append'
@@ -134,14 +246,12 @@ object Form1: TForm1
     Left = 539
     Top = 8
     Width = 288
-    Height = 440
-    Lines.Strings = (
-      'Memo1')
+    Height = 769
     TabOrder = 2
   end
   object btBitmapCompare: TButton
     Left = 843
-    Top = 580
+    Top = 590
     Width = 141
     Height = 25
     Caption = 'btBitmapCompare'
@@ -150,9 +260,9 @@ object Form1: TForm1
   end
   object DBGrid1: TDBGrid
     Left = 349
-    Top = 8
+    Top = 55
     Width = 184
-    Height = 529
+    Height = 129
     DataSource = d0
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -187,23 +297,132 @@ object Form1: TForm1
         Visible = True
       end>
   end
+  object bt_insert: TButton
+    Left = 8
+    Top = 111
+    Width = 75
+    Height = 25
+    Caption = 'bt_insert'
+    TabOrder = 5
+    OnClick = bt_insertClick
+  end
+  object bt_delete: TButton
+    Left = 8
+    Top = 142
+    Width = 75
+    Height = 25
+    Caption = 'bt_delete'
+    TabOrder = 6
+    OnClick = bt_deleteClick
+  end
+  object bt_edit: TButton
+    Left = 8
+    Top = 173
+    Width = 75
+    Height = 25
+    Caption = 'bt_edit'
+    TabOrder = 7
+    OnClick = bt_editClick
+  end
+  object bt_loop: TButton
+    Left = 8
+    Top = 432
+    Width = 75
+    Height = 25
+    Caption = 'bt_loop'
+    TabOrder = 8
+    OnClick = bt_loopClick
+  end
+  object bt_clear: TButton
+    Left = 8
+    Top = 235
+    Width = 75
+    Height = 25
+    Caption = 'bt_clear'
+    TabOrder = 9
+    OnClick = bt_clearClick
+  end
+  object bt_first: TButton
+    Left = 8
+    Top = 266
+    Width = 75
+    Height = 25
+    Caption = 'bt_first'
+    TabOrder = 10
+    OnClick = bt_firstClick
+  end
+  object bt_last: TButton
+    Left = 8
+    Top = 297
+    Width = 75
+    Height = 25
+    Caption = 'bt_last'
+    TabOrder = 11
+    OnClick = bt_lastClick
+  end
+  object bt_prior: TButton
+    Left = 8
+    Top = 328
+    Width = 75
+    Height = 25
+    Caption = 'bt_prior'
+    TabOrder = 12
+    OnClick = bt_priorClick
+  end
+  object bt_next: TButton
+    Left = 8
+    Top = 359
+    Width = 75
+    Height = 25
+    Caption = 'bt_next'
+    TabOrder = 13
+    OnClick = bt_nextClick
+  end
+  object Memo2: TMemo
+    Left = 158
+    Top = 190
+    Width = 185
+    Height = 324
+    TabOrder = 14
+  end
+  object Button2: TButton
+    Left = 64
+    Top = 632
+    Width = 75
+    Height = 25
+    Caption = 'Button2'
+    TabOrder = 16
+    OnClick = Button2Click
+  end
+  object log_clear: TButton
+    Left = 539
+    Top = 783
+    Width = 75
+    Height = 25
+    Caption = 'log_clear'
+    TabOrder = 15
+    OnClick = log_clearClick
+  end
   object xnGrid1: TxnGrid
-    Left = 159
-    Top = 8
-    Width = 184
-    Height = 529
+    Left = 158
+    Top = 55
+    Width = 185
+    Height = 129
     Columns = <
       item
         Alignment = taLeftJustify
         Width = 0
+        Caption = 'cod'
       end
       item
         Alignment = taLeftJustify
         Width = 0
+        Caption = 'des'
       end
       item
         Alignment = taLeftJustify
         Width = 0
+        Caption = 'grp'
       end>
     OptionsEditing = False
     ColWidths = (
@@ -215,60 +434,16 @@ object Form1: TForm1
       17
       20)
   end
-  object bt_insert: TButton
-    Left = 8
-    Top = 39
-    Width = 75
-    Height = 25
-    Caption = 'bt_insert'
-    TabOrder = 6
-    OnClick = bt_insertClick
-  end
-  object bt_delete: TButton
-    Left = 8
-    Top = 70
-    Width = 75
-    Height = 25
-    Caption = 'bt_delete'
-    TabOrder = 7
-    OnClick = bt_deleteClick
-  end
-  object bt_edit: TButton
-    Left = 8
-    Top = 101
-    Width = 75
-    Height = 25
-    Caption = 'bt_edit'
-    TabOrder = 8
-    OnClick = bt_editClick
-  end
-  object Edit1: TEdit
-    Left = 8
-    Top = 163
-    Width = 121
-    Height = 21
-    TabOrder = 9
-    Text = 'Edit1'
-  end
-  object Button1: TButton
-    Left = 24
-    Top = 296
-    Width = 75
-    Height = 25
-    Caption = 'Button1'
-    TabOrder = 10
-    OnClick = Button1Click
-  end
   object d0: TDataSource
     DataSet = cds0
-    Left = 400
-    Top = 288
+    Left = 384
+    Top = 207
   end
   object cds0: TClientDataSet
     Aggregates = <>
     Params = <>
-    Left = 368
-    Top = 288
+    Left = 352
+    Top = 207
     object cds0cod: TStringField
       FieldName = 'cod'
     end

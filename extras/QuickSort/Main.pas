@@ -17,12 +17,12 @@ type
     procedure bt_seek1Click(Sender: TObject);
     procedure bt_seek2Click(Sender: TObject);
   protected
-    procedure InitArray(aCount: integer);
+    procedure InitArray(aCount: Integer);
 
     { Private declarations }
   public
     { Public declarations }
-    fIndex: TList<integer>;
+    fIndex: TList<Integer>;
   end;
 
 var
@@ -36,10 +36,10 @@ const
 {$R *.dfm}
 
 
-function ArrayDebug(aCount, aColumn: integer): string;
+function ArrayDebug(aCount, aColumn: Integer): string;
 var
-  r: integer;
-  // c: integer;
+  r: Integer;
+  // c: Integer;
 begin
   Result := '';
   for r := 0 to aCount - 1 do
@@ -60,7 +60,7 @@ var
   c: TxnQuickSort.TComparer;
   v: TxnQuickSort.TGetter;
 begin
-  c := function(const aLeft, aRight: string): integer
+  c := function(const aLeft, aRight: string): Integer
     begin
       if aLeft < aRight then
         exit(-1)
@@ -70,7 +70,7 @@ begin
         exit(0);
     end;
 
-  v := function(const aIndex: integer): string
+  v := function(const aIndex: Integer): string
     begin
       Result := TSampleData.Value(CC, aIndex)
     end;
@@ -101,8 +101,8 @@ var
   sgd: TxnGridDataSort;
   fi: IxnGridFilterItems;
   si: IxnGridSortItems;
-  n: integer;
-  s: integer;
+  n: Integer;
+  s: Integer;
   a: TArray<variant>;
 begin
   Application.ProcessMessages;
@@ -147,8 +147,8 @@ var
   sgd: TxnGridDataSort;
   fi: IxnGridFilterItems;
   si: IxnGridSortItems;
-  n: integer;
-  s: integer;
+  n: Integer;
+  s: Integer;
   a: TArray<variant>;
 begin
   memo_2.Lines.Clear;
@@ -199,12 +199,12 @@ begin
   end;
 end;
 
-procedure TFormMain.InitArray(aCount: integer);
+procedure TFormMain.InitArray(aCount: Integer);
 var
-  i: integer;
-  n: integer;
+  i: Integer;
+  n: Integer;
 begin
-  fIndex := TList<integer>.Create;
+  fIndex := TList<Integer>.Create;
   n := 0;
   for i := 0 to aCount - 1 do
   begin

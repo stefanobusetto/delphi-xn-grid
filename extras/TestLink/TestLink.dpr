@@ -16,7 +16,6 @@ begin
   ReportMemoryLeaksOnShutdown := True;
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
-  TStyleManager.TrySetStyle('Luna');
   Application.CreateForm(TForm1, Form1);
   Application.Run;
 

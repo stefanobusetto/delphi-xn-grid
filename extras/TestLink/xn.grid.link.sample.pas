@@ -2,146 +2,238 @@ unit xn.grid.link.sample;
 
 interface
 
-uses Generics.Collections,
+
+uses System.SysUtils, System.Classes, Generics.Collections,
   xn.grid.common;
 
 type
-  TxnGridLinkSample = class(TInterfacedObject, IxnGridLink)
+  TxnGridLinkCustom<T> = class(TInterfacedObject, IxnGridLink)
   strict private
+    fLog: TStrings;
     fItems: TList<string>;
-    fRecNo: integer;
-  public
-    fOnRowAdd: TxnGridOnRowAdd;
-    fOnRowDel: TxnGridOnRowDel;
-    fOnRowEdit: TxnGridOnRowEdit;
-    fOnRecNo: TxnGridOnRecNo;
+    fRecNo: Integer;
+    fNotify: TxnGridLinkNotify;
 
+    function RowCount: Integer;
+    function AsDebug: String;
+
+    procedure RecNoSet(aIndex: Integer);
+    function RecNoGet: Integer;
+
+    procedure LogSet(aValue: TStrings);
+    function LogGet: TStrings;
+    procedure LogString(aString: String);
+  public
     constructor Create;
     destructor Destroy; override;
+    procedure First;
+    procedure Last;
+    procedure Prior;
+    procedure Next;
+    procedure Clear;
+    procedure Move(aIndex: Integer);
     procedure Append(aString: string);
-    procedure Insert(aIndex: integer; aString: string);
-    procedure Edit(aIndex: integer; aString: string);
-    procedure Delete(aIndex: integer);
+    procedure Insert(aIndex: Integer; aString: string);
+    procedure Edit(aIndex: Integer; aString: string);
+    procedure Delete(aIndex: Integer);
 
-    procedure OnRowAddSet(aOnRowAdd: TxnGridOnRowAdd);
-    procedure OnRowDelSet(aOnRowDel: TxnGridOnRowDel);
-    procedure OnRowEditSet(aOnRowEdit: TxnGridOnRowEdit);
-    procedure OnRecNoSet(aOnRecNo: TxnGridOnRecNo);
+    procedure NotifySet(aRowEvent: TxnGridLinkNotify);
 
-    procedure RecNoSet(aIndex: integer);
-    function RecNoGet: integer;
+    function ValueString(aCol, aRow: Integer): String;
+    function ValueFloat(aCol, aRow: Integer): Double;
 
-    function RowCount: LongInt;
-    function AsDebug: string;
-    function ValueString(aCol, aRow: LongInt): String;
-    function ValueFloat(aCol, aRow: LongInt): Double;
+    property Log: TStrings read LogGet write LogSet;
+  end;
+
+  TxnGridLinkSample = class(TxnGridLinkCustom<string>)
   end;
 
 implementation
 
-uses System.SysUtils;
-
 { TxnGridLinkSample }
 
-procedure TxnGridLinkSample.OnRecNoSet(aOnRecNo: TxnGridOnRecNo);
+procedure TxnGridLinkCustom<T>.Append(aString: string);
 begin
-  fOnRecNo := aOnRecNo;
+  LogString(Format('TxnGridLinkCustom<T>.Append()', []));
+
+  Insert(RowCount, aString);
 end;
 
-procedure TxnGridLinkSample.OnRowAddSet(aOnRowAdd: TxnGridOnRowAdd);
+procedure TxnGridLinkCustom<T>.Insert(aIndex: Integer; aString: string);
 begin
-  fOnRowAdd := aOnRowAdd;
-end;
+  LogString(Format('TxnGridLinkCustom<T>.Insert(%d)', [aIndex]));
 
-procedure TxnGridLinkSample.OnRowEditSet(aOnRowEdit: TxnGridOnRowEdit);
-begin
-  fOnRowEdit := aOnRowEdit
-end;
-
-procedure TxnGridLinkSample.OnRowDelSet(aOnRowDel: TxnGridOnRowDel);
-begin
-  fOnRowDel := aOnRowDel;
-end;
-
-procedure TxnGridLinkSample.Append(aString: string);
-begin
-  fItems.Add(aString);
-  fRecNo := RowCount - 1;
-  fOnRowAdd(RowCount - 1);
-end;
-
-procedure TxnGridLinkSample.Insert(aIndex: integer; aString: string);
-begin
   fItems.Insert(aIndex, aString);
-  fRecNo := aIndex;
-  fOnRowAdd(aIndex);
+  if Assigned(fNotify) then
+    fNotify(xnGridNotifyDataCreateLinkEvent(aIndex, gekAdd));
+  RecNoSet(aIndex);
 end;
 
-procedure TxnGridLinkSample.Delete(aIndex: integer);
+procedure TxnGridLinkCustom<T>.Delete(aIndex: Integer);
 begin
+  LogString(Format('TxnGridLinkCustom<T>.Delete(%d)', [aIndex]));
+
   fItems.Delete(aIndex);
-  if aIndex >= RowCount - 1 then
-    fRecNo := RowCount - 1;
-  fOnRowDel(aIndex);
+  if Assigned(fNotify) then
+    fNotify(xnGridNotifyDataCreateLinkEvent(aIndex, gekDel));
+  RecNoSet(aIndex);
 end;
 
-function TxnGridLinkSample.AsDebug: string;
-var
-  s: string;
+procedure TxnGridLinkCustom<T>.Edit(aIndex: Integer; aString: string);
 begin
-  Result := fRecNo.ToString + ':';
-  for s in fItems do
-    Result := Result + s + '#'
-end;
+  LogString(Format('TxnGridLinkCustom<T>.Edit(%d)', [aIndex]));
 
-procedure TxnGridLinkSample.Edit(aIndex: integer; aString: string);
-begin
   fItems[aIndex] := aString;
-  fOnRowEdit(aIndex);
+  if Assigned(fNotify) then
+    fNotify(xnGridNotifyDataCreateLinkEvent(aIndex, gekEdit));
+  RecNoSet(aIndex);
 end;
 
-constructor TxnGridLinkSample.Create;
+procedure TxnGridLinkCustom<T>.Move(aIndex: Integer);
 begin
+  LogString(Format('TxnGridLinkCustom<T>.Move.Outer(%d)', [aIndex]));
+
+  if RecNoGet() = aIndex then
+    Exit;
+
+  LogString(Format('TxnGridLinkCustom<T>.Move.Inner(%d)', [aIndex]));
+
+  if Assigned(fNotify) then
+    fNotify(xnGridNotifyDataCreateLinkEvent(aIndex, gekMove));
+  RecNoSet(aIndex);
+end;
+
+procedure TxnGridLinkCustom<T>.First;
+begin
+  LogString(Format('TxnGridLinkCustom<T>.First(%d)', [0]));
+
+  if RecNoGet() > 0 then
+    Move(0);
+end;
+
+procedure TxnGridLinkCustom<T>.Last;
+var
+  r: Integer;
+begin
+  r := RowCount() - 1;
+  LogString(Format('TxnGridLinkCustom<T>.Last(%d)', [r]));
+
+  if RecNoGet() < r then
+    Move(r);
+end;
+
+procedure TxnGridLinkCustom<T>.Prior;
+var
+  r: Integer;
+begin
+  r := RecNoGet();
+  LogString(Format('TxnGridLinkCustom<T>.Prior(%d)', [r - 1]));
+
+  if r > 0 then
+    Move(r - 1);
+end;
+
+procedure TxnGridLinkCustom<T>.Next;
+var
+  r: Integer;
+begin
+  r := RecNoGet();
+  LogString(Format('TxnGridLinkCustom<T>.Next(%d)', [r + 1]));
+
+  if r < RowCount() - 1 then
+    Move(r + 1);
+end;
+
+function TxnGridLinkCustom<T>.LogGet: TStrings;
+begin
+  Result := fLog
+end;
+
+procedure TxnGridLinkCustom<T>.LogSet(aValue: TStrings);
+begin
+  fLog := aValue
+end;
+
+procedure TxnGridLinkCustom<T>.LogString(aString: String);
+begin
+  if fLog <> nil then
+    fLog.add(aString);
+end;
+
+function TxnGridLinkCustom<T>.AsDebug: String;
+begin
+  raise Exception.Create('TxnGridLinkCustom<T>.AsDebug not implemented!');
+end;
+
+procedure TxnGridLinkCustom<T>.Clear;
+begin
+  LogString(Format('TxnGridLinkCustom<T>.Clear()', []));
+
+  fItems.Clear;
+  if Assigned(fNotify) then
+    fNotify(xnGridNotifyDataCreateLinkEvent(0, gekAdd));
+  RecNoSet(-1);
+end;
+
+constructor TxnGridLinkCustom<T>.Create;
+begin
+  fLog := nil;
+  fNotify := nil;
   fRecNo := -1;
+
   fItems := TList<string>.Create;
 end;
 
-destructor TxnGridLinkSample.Destroy;
+destructor TxnGridLinkCustom<T>.Destroy;
 begin
+  fLog := nil;
   fItems.Clear;
   fItems.Free;
   inherited;
 end;
 
-function TxnGridLinkSample.RecNoGet: integer;
+function TxnGridLinkCustom<T>.RecNoGet: Integer;
 begin
-  Result := fRecNo;
+  Result := fRecNo
 end;
 
-procedure TxnGridLinkSample.RecNoSet(aIndex: integer);
+procedure TxnGridLinkCustom<T>.RecNoSet(aIndex: Integer);
 begin
+  LogString(Format('TxnGridLinkCustom<T>.RecNoSet(%d)', [aIndex]));
+
+  if aIndex < 0 then
+    aIndex := 0;
+
+  if aIndex > RowCount - 1 then
+    aIndex := RowCount - 1;
+
   if fRecNo <> aIndex then
     fRecNo := aIndex;
 end;
 
-function TxnGridLinkSample.RowCount: LongInt;
+function TxnGridLinkCustom<T>.RowCount: Integer;
 begin
   Result := fItems.Count;
 end;
 
-function TxnGridLinkSample.ValueFloat(aCol, aRow: integer): Double;
+procedure TxnGridLinkCustom<T>.NotifySet(aRowEvent: TxnGridLinkNotify);
+begin
+  fNotify := aRowEvent;
+end;
+
+function TxnGridLinkCustom<T>.ValueFloat(aCol, aRow: Integer): Double;
 begin
   Result := StrToFloat(ValueString(aCol, aRow));
 end;
 
-function TxnGridLinkSample.ValueString(aCol, aRow: LongInt): String;
+function TxnGridLinkCustom<T>.ValueString(aCol, aRow: Integer): String;
 begin
   if aRow < 0 then
-    exit('');
+    Exit('');
   if aRow >= fItems.Count then
-    exit('');
+    Exit('');
 
-  Result := fItems[aRow] // + '(' + aCol.ToString() + '.' + aRow.ToString() + ')'
+  Result := fItems[aRow]
 end;
 
 end.

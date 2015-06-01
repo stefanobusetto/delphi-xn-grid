@@ -111,39 +111,102 @@ begin
   fDataSet.Delete;
 end;
 
+procedure Clear;
+begin
+  Asserts;
+
+  fLink.Clear;
+
+  while not fDataSet.IsEmpty do
+    fDataSet.Delete;
+end;
+
+procedure First;
+begin
+  Asserts;
+
+  fLink.First;
+  fDataSet.First;
+end;
+
+procedure Last;
+begin
+  Asserts;
+
+  fLink.Last;
+  fDataSet.Last;
+end;
+
+procedure Prior;
+begin
+  Asserts;
+
+  fLink.Prior;
+  fDataSet.Prior;
+end;
+
+procedure Next;
+begin
+  Asserts;
+
+  fLink.Next;
+  fDataSet.Next;
+end;
+
+
 function RandNumber: Integer;
 begin
-  Result := RandomRange(1, 4);
+  Result := RandomRange(1, 10);
 end;
 
 function RandCommand: String;
 begin
   case RandNumber() of
     1:
-      Exit('a');
+      Exit('append');
     2:
-      Exit('i');
+      Exit('insert');
     3:
-      Exit('d');
+      Exit('delete');
     4:
-      Exit('e');
+      Exit('edit');
+    5:
+      Exit('first');
+    6:
+      Exit('last');
+    7:
+      Exit('prior');
+    8:
+      Exit('next');
+    9:
+      Exit('clear');
   else
-    raise Exception.Create('Invalid Number');
+    raise Exception.Create('Invalid number');
   end;
 end;
 
 procedure Execute(aCommand: String);
 begin
-  if SameText(aCommand, 'a') then
-    Append(NewId())
-  else if SameText(aCommand, 'i') then
-    Insert(NewId())
-  else if SameText(aCommand, 'd') then
+  if SameText(aCommand, 'clear') then
+    Clear
+  else if SameText(aCommand, 'delete') then
     Delete
-  else if SameText(aCommand, 'e') then
+  else if SameText(aCommand, 'edit') then
     Edit(NewId())
+  else if SameText(aCommand, 'append') then
+    Append(NewId())
+  else if SameText(aCommand, 'insert') then
+    Insert(NewId())
+  else if SameText(aCommand, 'first') then
+    First
+  else if SameText(aCommand, 'last') then
+    Last
+  else if SameText(aCommand, 'prior') then
+    Prior
+  else if SameText(aCommand, 'next') then
+    Next
   else
-    raise Exception.Create('Invalid Execute');
+    raise Exception.CreateFmt('Invalid command "%s"', [aCommand]);
 end;
 
 end.

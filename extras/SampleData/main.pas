@@ -63,11 +63,11 @@ begin
     aII + aSeparator + aBB;
 end;
 
-procedure TableCreate(aName: string; aCount: integer);
+procedure TableCreate(aName: string; aCount: Integer);
 var
-  n, c: integer;
-  s, f: integer;
-  i, b: integer;
+  n, c: Integer;
+  s, f: Integer;
+  i, b: Integer;
 
   xls: string;
   pas: string;

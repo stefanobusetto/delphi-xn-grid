@@ -30,35 +30,35 @@ type
       ('36', 'Silver', 'NY', '3,76', '8', 'F'),
       ('38', 'Purple', 'HI', '2,56', '68', 'F'));
   public
-    class function RowCount: LongInt;
-    class function Value(aCol, aRow: integer): string;
+    class function RowCount: Integer;
+    class function Value(aCol, aRow: Integer): string;
   end;
 
   TSampleGridData = class(TInterfacedObject, IxnGridData)
   public
-    function RowCount: LongInt;
+    function RowCount: Integer;
     function AsDebug: string;
-    function ValueString(aCol, aRow: LongInt): String;
-    function ValueFloat(aCol, aRow: LongInt): Double;
+    function ValueString(aCol, aRow: Integer): String;
+    function ValueFloat(aCol, aRow: Integer): Double;
   end;
 
   TSampleGridData2By2 = class(TInterfacedObject, IxnGridData)
   private
-    fItems: TList<integer>;
-    procedure Fill(aCount: integer); virtual;
+    fItems: TList<Integer>;
+    procedure Fill(aCount: Integer); virtual;
     procedure Rand; virtual;
   public
-    constructor Create(aCount: integer); virtual;
+    constructor Create(aCount: Integer); virtual;
     destructor Destroy; override;
-    function RowCount: LongInt; virtual;
+    function RowCount: Integer; virtual;
     function AsDebug: string; virtual;
-    function ValueString(aCol, aRow: LongInt): String; virtual;
-    function ValueFloat(aCol, aRow: LongInt): Double; virtual;
+    function ValueString(aCol, aRow: Integer): String; virtual;
+    function ValueFloat(aCol, aRow: Integer): Double; virtual;
   end;
 
   TSampleGridDataRandom = class(TSampleGridData2By2)
   private
-    procedure Fill(aCount: integer); override;
+    procedure Fill(aCount: Integer); override;
   end;
 
   TSampleGridDataList = class(TInterfacedObject, IxnGridData)
@@ -77,10 +77,10 @@ type
   public
     constructor Create;
     destructor Destroy; override;
-    function RowCount: LongInt;
+    function RowCount: Integer;
     function AsDebug: string;
-    function ValueString(aCol, aRow: LongInt): String;
-    function ValueFloat(aCol, aRow: LongInt): Double;
+    function ValueString(aCol, aRow: Integer): String;
+    function ValueFloat(aCol, aRow: Integer): Double;
   end;
 
 implementation
@@ -110,12 +110,12 @@ uses System.Math, System.SysUtils;
   38;Purple;HI;2,56;68;F
 }
 
-class function TSampleData.RowCount: LongInt;
+class function TSampleData.RowCount: Integer;
 begin
   Result := Length(TABLE_20);
 end;
 
-class function TSampleData.Value(aCol, aRow: integer): string;
+class function TSampleData.Value(aCol, aRow: Integer): string;
 begin
   Result := TABLE_20[aRow, aCol];
 end;
@@ -124,24 +124,24 @@ end;
 
 function TSampleGridData.AsDebug: string;
 var
-  r: integer;
+  r: Integer;
 begin
   Result := '';
   for r := 0 to RowCount - 1 do
     Result := Result + ValueString(0, r) + ','
 end;
 
-function TSampleGridData.RowCount: LongInt;
+function TSampleGridData.RowCount: Integer;
 begin
   Result := TSampleData.RowCount
 end;
 
-function TSampleGridData.ValueFloat(aCol, aRow: integer): Double;
+function TSampleGridData.ValueFloat(aCol, aRow: Integer): Double;
 begin
   Result := StrToFloat(ValueString(aCol, aRow));
 end;
 
-function TSampleGridData.ValueString(aCol, aRow: integer): String;
+function TSampleGridData.ValueString(aCol, aRow: Integer): String;
 begin
   Result := TSampleData.Value(aCol, aRow);
 end;
@@ -150,17 +150,17 @@ end;
 
 function TSampleGridData2By2.AsDebug: string;
 var
-  r: integer;
+  r: Integer;
 begin
   Result := '';
   for r := 0 to RowCount - 1 do
     Result := Result + ValueString(0, r) + ','
 end;
 
-constructor TSampleGridData2By2.Create(aCount: integer);
+constructor TSampleGridData2By2.Create(aCount: Integer);
 begin
   inherited Create;
-  fItems := TList<integer>.Create;
+  fItems := TList<Integer>.Create;
   Fill(aCount);
   Rand;
 end;
@@ -170,9 +170,9 @@ begin
   fItems.Free;
 end;
 
-procedure TSampleGridData2By2.Fill(aCount: integer);
+procedure TSampleGridData2By2.Fill(aCount: Integer);
 var
-  i: integer;
+  i: Integer;
 begin
   for i := 0 to aCount - 1 do
     fItems.Add(2 * i);
@@ -180,9 +180,9 @@ end;
 
 procedure TSampleGridData2By2.Rand;
 var
-  i: integer;
-  a: integer;
-  b: integer;
+  i: Integer;
+  a: Integer;
+  b: Integer;
 begin
   for i := 0 to RowCount - 1 do
   begin
@@ -192,26 +192,26 @@ begin
   end;
 end;
 
-function TSampleGridData2By2.RowCount: LongInt;
+function TSampleGridData2By2.RowCount: Integer;
 begin
   Result := fItems.Count;
 end;
 
-function TSampleGridData2By2.ValueFloat(aCol, aRow: integer): Double;
+function TSampleGridData2By2.ValueFloat(aCol, aRow: Integer): Double;
 begin
   Result := fItems[aRow];
 end;
 
-function TSampleGridData2By2.ValueString(aCol, aRow: integer): String;
+function TSampleGridData2By2.ValueString(aCol, aRow: Integer): String;
 begin
   Result := IntToStr(fItems[aRow]);
 end;
 
 { TSampleGridDataRandom }
 
-procedure TSampleGridDataRandom.Fill(aCount: integer);
+procedure TSampleGridDataRandom.Fill(aCount: Integer);
 var
-  i: integer;
+  i: Integer;
 begin
   for i := 0 to aCount - 1 do
     fItems.Add(RandomRange(0, 100));
@@ -233,7 +233,7 @@ end;
 
 function TSampleGridDataList.AsDebug: string;
 var
-  r: integer;
+  r: Integer;
 begin
   Result := '';
   for r := 0 to RowCount - 1 do
@@ -242,7 +242,7 @@ end;
 
 constructor TSampleGridDataList.Create;
 var
-  i: integer;
+  i: Integer;
 begin
   fItems := TList<TItem>.Create;
   for i := 0 to Length(TSampleData.TABLE_20) - 1 do
@@ -261,17 +261,17 @@ begin
   inherited;
 end;
 
-function TSampleGridDataList.RowCount: LongInt;
+function TSampleGridDataList.RowCount: Integer;
 begin
   Result := fItems.Count;
 end;
 
-function TSampleGridDataList.ValueFloat(aCol, aRow: integer): Double;
+function TSampleGridDataList.ValueFloat(aCol, aRow: Integer): Double;
 begin
   Result := StrToFloat(ValueString(aCol, aRow));
 end;
 
-function TSampleGridDataList.ValueString(aCol, aRow: integer): String;
+function TSampleGridDataList.ValueString(aCol, aRow: Integer): String;
 begin
   case aCol of
     0:

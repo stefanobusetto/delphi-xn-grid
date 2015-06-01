@@ -5,7 +5,8 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Grids, xn.grid,
-  Vcl.ExtCtrls, uBitmaps, Vcl.DBGrids, Data.DB, Datasnap.DBClient, uCommands;
+  Vcl.ExtCtrls, uBitmaps, Vcl.DBGrids, Data.DB, Datasnap.DBClient, uCommands,
+  xn.grid.common, xn.grid.Link.sample;
 
 type
   TForm1 = class(TForm)
@@ -15,7 +16,6 @@ type
     btBitmapCompare: TButton;
     d0: TDataSource;
     DBGrid1: TDBGrid;
-    xnGrid1: TxnGrid;
     xnGridImage: TImage;
     DbGridImage: TImage;
     DiffImage: TImage;
@@ -32,10 +32,26 @@ type
     bt_edit: TButton;
     xnGrid1_RecNo: TLabel;
     DbGrid1_RecNo: TLabel;
-    Edit1: TEdit;
-    Button1: TButton;
+    bt_loop: TButton;
     xnGrid1_RecCount: TLabel;
     DbGrid1_RecCount: TLabel;
+    bt_clear: TButton;
+    bt_first: TButton;
+    bt_last: TButton;
+    bt_prior: TButton;
+    bt_next: TButton;
+    Memo2: TMemo;
+    Button2: TButton;
+    log_clear: TButton;
+    Label4: TLabel;
+    Label5: TLabel;
+    DiffMin: TLabel;
+    DiffMax: TLabel;
+    Label6: TLabel;
+    Label7: TLabel;
+    Differenze: TLabel;
+    Label8: TLabel;
+    xnGrid1: TxnGrid;
     procedure bt_fillClick(Sender: TObject);
     procedure bt_insertClick(Sender: TObject);
     procedure bt_deleteClick(Sender: TObject);
@@ -43,9 +59,19 @@ type
     procedure bt_editClick(Sender: TObject);
     procedure FormActivate(Sender: TObject);
     procedure btBitmapCompareClick(Sender: TObject);
-    procedure Button1Click(Sender: TObject);
+    procedure bt_loopClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure bt_clearClick(Sender: TObject);
+    procedure bt_firstClick(Sender: TObject);
+    procedure bt_lastClick(Sender: TObject);
+    procedure bt_priorClick(Sender: TObject);
+    procedure bt_nextClick(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+    procedure Button2Click(Sender: TObject);
+    procedure log_clearClick(Sender: TObject);
   private
     { Private declarations }
+    link0: IxnGridLink;
   public
     { Public declarations }
   end;
@@ -60,14 +86,13 @@ uses xn.timers, System.Math;
 {$R *.dfm}
 
 
-function BitmapCompare: integer;
+function BitmapCompare: Integer;
 var
   bb: TBitmap;
   b1: TBitmap;
   b2: TBitmap;
   c: TBitmapCompareResult;
 begin
-  result := 9999;
   bb := TBitmap.Create;
   try
     bb.Width := 1;
@@ -90,14 +115,12 @@ begin
       c := uBitmaps.BitmapCompare(b1, b2, 0);
 
       try
-        if c.Count > 0 then
-        begin
-          Form1.xnGridImage.Picture.Bitmap.Assign(b1);
-          Form1.DbGridImage.Picture.Bitmap.Assign(b2);
-          Form1.DiffImage.Picture.Bitmap.Assign(c.Bitmap);
-          Form1.DiffCount.Caption := c.Count.ToString();
-          result := c.Count;
-        end;
+        Form1.xnGridImage.Picture.Bitmap.Assign(b1);
+        Form1.DbGridImage.Picture.Bitmap.Assign(b2);
+        Form1.DiffImage.Picture.Bitmap.Assign(c.Bitmap);
+        Form1.DiffCount.Caption := c.Count.ToString();
+
+        result := c.Count;
       finally
         c.Bitmap.Free
       end;
@@ -110,67 +133,136 @@ begin
 end;
 
 procedure AfterCommand;
+var
+  r: Integer;
+  c: Integer;
 begin
-  if BitmapCompare() > 50 then
-    raise Exception.Create('Bitmap compare error.');
-
-  if Form1.cds0.RecordCount <> Form1.xnGrid1.link.RowCount then
-    raise Exception.Create('RecordCount() error.');
-
-  // if Form1.cds0.RecNo <> Form1.xnGrid1.link.RecNo + 1 then
-  // raise Exception.Create('RecNo() error.');
-
-  Form1.xnGrid1.LogLink;
-
-  Form1.xnGrid1_RecNo.Caption := Form1.xnGrid1.link.RecNo.ToString();
-  Form1.xnGrid1_RecCount.Caption := Form1.xnGrid1.link.RowCount.ToString();
+  Form1.xnGrid1_RecNo.Caption := Form1.link0.RecNo.ToString();
+  Form1.xnGrid1_RecCount.Caption := Form1.link0.RowCount.ToString();
   Form1.DbGrid1_RecNo.Caption := Form1.cds0.RecNo.ToString();
   Form1.DbGrid1_RecCount.Caption := Form1.cds0.RecordCount.ToString();
+
+  if Form1.xnGrid1.Link <> nil then
+  begin
+    c := BitmapCompare();
+    if c < StrToInt(Form1.DiffMin.Caption) then
+      Form1.DiffMin.Caption := c.ToString();
+    if c > StrToInt(Form1.DiffMax.Caption) then
+      Form1.DiffMax.Caption := c.ToString();
+
+    if c > 3 * Form1.link0.RowCount + 10 then
+      raise Exception.Create('Bitmap compare error.');
+  end;
+
+  r := Form1.cds0.RecordCount;
+  if r <> Form1.link0.RowCount then
+    raise Exception.Create('RecordCount() error.');
+
+  if Form1.cds0.RecordCount = 0 then
+    r := 0
+  else
+    r := Form1.cds0.RecNo;
+  if r <> Form1.link0.RecNo + 1 then
+    raise Exception.Create('RecNo() error.');
+end;
+
+procedure ExecuteCommand(aCommand: String);
+begin
+  uCommands.Execute(aCommand);
+  Form1.Memo1.Lines.Add('------------------');
+  Application.ProcessMessages;
+
+  AfterCommand;
 end;
 
 procedure TForm1.bt_appendClick(Sender: TObject);
 begin
-  uCommands.Append(NewId());
-  AfterCommand;
+  ExecuteCommand('append');
 end;
 
-procedure TForm1.bt_deleteClick(Sender: TObject);
+procedure TForm1.bt_clearClick(Sender: TObject);
 begin
-  uCommands.delete;
-  AfterCommand;
-end;
-
-procedure TForm1.bt_editClick(Sender: TObject);
-begin
-  uCommands.Edit(NewId());
-  AfterCommand;
-end;
-
-procedure TForm1.bt_fillClick(Sender: TObject);
-begin
-  uCommands.Append(NewId());
-  uCommands.Append(NewId());
-  uCommands.Append(NewId());
-  uCommands.Append(NewId());
-  AfterCommand;
+  ExecuteCommand('clear');
 end;
 
 procedure TForm1.bt_insertClick(Sender: TObject);
 begin
-  uCommands.insert(NewId());
-  AfterCommand;
+  ExecuteCommand('insert');
 end;
 
-procedure TForm1.Button1Click(Sender: TObject);
-var
-  i: integer;
+procedure TForm1.bt_lastClick(Sender: TObject);
 begin
-  for i := 0 to 50 do
+  ExecuteCommand('last');
+end;
+
+procedure TForm1.bt_nextClick(Sender: TObject);
+begin
+  ExecuteCommand('next');
+end;
+
+procedure TForm1.bt_priorClick(Sender: TObject);
+begin
+  ExecuteCommand('prior');
+end;
+
+procedure TForm1.bt_deleteClick(Sender: TObject);
+begin
+  ExecuteCommand('delete');
+end;
+
+procedure TForm1.bt_editClick(Sender: TObject);
+begin
+  ExecuteCommand('edit');
+end;
+
+procedure TForm1.bt_fillClick(Sender: TObject);
+begin
+  ExecuteCommand('append');
+  ExecuteCommand('append');
+  ExecuteCommand('append');
+  ExecuteCommand('append');
+  ExecuteCommand('append');
+  ExecuteCommand('append');
+end;
+
+procedure TForm1.bt_firstClick(Sender: TObject);
+begin
+  ExecuteCommand('first');
+end;
+
+procedure TForm1.bt_loopClick(Sender: TObject);
+var
+  i: Integer;
+  c: string;
+begin
+  for i := 0 to 250 do
   begin
-    Execute(RandCommand());
+    if i mod 50 = 0 then
+      Memo1.Lines.Clear;
+
+    c := RandCommand();
+    Memo2.Lines.Add(c);
+
+    if SameText(c, 'clear') then
+      Memo2.Lines.Clear;
+
+    ExecuteCommand(c);
+
     Application.ProcessMessages;
-    AfterCommand;
+    Form1.Caption := IntToStr(i);
   end;
+end;
+
+procedure TForm1.Button2Click(Sender: TObject);
+begin
+  ExecuteCommand('append');
+  ExecuteCommand('append');
+  ExecuteCommand('append');
+  // ExecuteCommand('append');
+  ExecuteCommand('first');
+  log_clear.Click;
+  ExecuteCommand('delete');
+  // ExecuteCommand('prior');
 end;
 
 procedure TForm1.btBitmapCompareClick(Sender: TObject);
@@ -180,15 +272,33 @@ end;
 
 procedure TForm1.FormActivate(Sender: TObject);
 begin
+  uCommands.Init(link0, cds0);
+
+  xnGrid1.Link := link0;
+  xnGrid1.Log := Memo1.Lines;
+
+  AfterCommand;
+end;
+
+procedure TForm1.FormCreate(Sender: TObject);
+begin
   cds0.CreateDataSet;
   cds0.LogChanges := False;
   cds0.Open;
 
-  uCommands.Init(xnGrid1.link, cds0);
+  link0 := TxnGridLinkSample.Create;
+  TxnGridLinkSample(link0).Log := Memo1.Lines;
+end;
 
-  xnGrid1.Log := Memo1.Lines;
+procedure TForm1.FormDestroy(Sender: TObject);
+begin
+  xnGrid1.Log := nil;
+  TxnGridLinkSample(link0).Log := nil;
+end;
 
-  AfterCommand;
+procedure TForm1.log_clearClick(Sender: TObject);
+begin
+  Memo1.Lines.Clear;
 end;
 
 end.
