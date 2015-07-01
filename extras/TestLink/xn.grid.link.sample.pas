@@ -7,7 +7,21 @@ uses System.SysUtils, System.Classes, Generics.Collections,
   xn.grid.common;
 
 type
-  TxnGridLinkCustom<T> = class(TInterfacedObject, IxnGridLink)
+  IxnGridLinkCustom<T> = interface(IxnGridLink)
+    ['{29DA3AC6-EA0C-4CE0-934D-D6D0A48CEF4C}']
+    procedure First;
+    procedure Last;
+    procedure Prior;
+    procedure Next;
+    procedure Clear;
+    procedure Append(aString: string);
+    procedure Insert(aIndex: Integer; aString: string);
+    procedure Edit(aIndex: Integer; aString: string);
+    procedure Delete(aIndex: Integer);
+
+  end;
+
+  TxnGridLinkCustom<T> = class(TInterfacedObject, IxnGridLinkCustom<T>)
   strict private
     fLog: TStrings;
     fItems: TList<string>;
@@ -192,7 +206,7 @@ begin
   inherited;
 end;
 
-function TxnGridLinkCustom<T>.RecNoGet: Integer;
+function TxnGridLinkCustom<T>.RecNoGet(): Integer;
 begin
   Result := fRecNo
 end;

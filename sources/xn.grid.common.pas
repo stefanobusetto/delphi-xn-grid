@@ -31,19 +31,11 @@ type
 
   IxnGridLink = interface(IxnGridData)
     ['{6CDF8790-F13F-4507-9DB3-E173799CEAD4}']
-    procedure First;
-    procedure Last;
-    procedure Prior;
-    procedure Next;
-    procedure Clear;
-    procedure Append(aString: string);
-    procedure Insert(aIndex: Integer; aString: string);
-    procedure Edit(aIndex: Integer; aString: string);
-    procedure Delete(aIndex: Integer);
     procedure RecNoSet(aIndex: Integer);
     function RecNoGet: Integer;
-    procedure NotifySet(aRowEvent: TxnGridLinkNotify);
     property RecNo: Integer read RecNoGet write RecNoSet;
+
+    procedure NotifySet(aRowEvent: TxnGridLinkNotify);
     property Notify: TxnGridLinkNotify write NotifySet;
   end;
 

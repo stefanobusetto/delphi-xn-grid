@@ -30,6 +30,7 @@ type
     procedure ItemSet(aIndex: Integer; aValue: TxnGridColumn);
   private
     fNotify: TxnGridColNotify;
+    function CaptionGet(aIndex: Integer): string;
   public
     constructor Create(AOwner: TPersistent; ItemClass: TCollectionItemClass);
     property Items[aIndex: Integer]: TxnGridColumn read ItemGet write ItemSet; default;
@@ -156,7 +157,15 @@ procedure TxnGrid.DrawCell(aCol, aRow: Integer; ARect: TRect; AState: TGridDrawS
 var
   r: TRect;
   v: string;
+  s: Integer;
   f: Cardinal;
+
+  pc: TColor;
+  bc: TColor;
+
+  triangle: array [0 .. 2] of TPoint;
+const
+  spacing = 4;
 
   // LStyle: TCustomStyleServices;
   // LColor: TColor;
@@ -165,15 +174,20 @@ var
   // LFixedBorderColor: TColor;
 
 begin
-  if aCol = 0 then
+  if aCol < 0 then
     exit;
-  if aRow = 0 then
+  if aRow < 0 then
     exit;
 
   if fLink = nil then
     v := ''
   else
-    v := fLink.ValueString(aCol - 1, aRow - 1);
+  begin
+    if aRow = 0 then
+      v := fColumns.CaptionGet(aCol - 1)
+    else
+      v := fLink.ValueString(aCol - 1, aRow - 1);
+  end;
 
   {
     FInternalColor := Color;
@@ -233,6 +247,9 @@ begin
   else
     f := DT_SINGLELINE; // or DT_VCENTER;
 
+  if aRow = 0 then
+    Canvas.Font.Size := Font.Size - 2;
+
   r := ARect;
   r.Top := r.Top + 2;
   r.Left := r.Left + 3;
@@ -257,6 +274,40 @@ begin
   // Canvas.FillRect(r) ;
 
   // DrawCellBackground(ARect, clGray, [gdFixed], aCol, aRow);
+
+  if fLink = nil then
+    s := -1
+  else
+    s := fLink.RecNo + 1;
+
+  if aCol = 0 then
+    if aRow = 0 then
+      v := ''
+    else
+      if aRow = s then
+      v := '>'
+    else
+      v := '';
+
+  // begin
+  // bc := Canvas.Brush.Color;
+  // pc := Canvas.Pen.Color;
+  // triangle[0] := TPoint.Create(ARect.Left + spacing, ARect.Top + spacing);
+  // triangle[1] := TPoint.Create(ARect.Left + spacing, ARect.Top + ARect.Height - spacing);
+  // triangle[2] := TPoint.Create(ARect.Left + ARect.Width - spacing, ARect.Top + ARect.Height div 2);
+  //
+  // Canvas.Pen.Color := clBlack;
+  // Canvas.Brush.Color := clBlack;
+  // Canvas.Polygon(triangle);
+  // Canvas.FloodFill(ARect.Left + ARect.Width div 2, ARect.Top + ARect.Height div 2, clBlack, fsSurface);
+  //
+  // Canvas.Pen.Color := pc;
+  // Canvas.Brush.Color := bc;
+  // end
+  // end
+  // else
+
+  // if aCol = 0 then
 
   DrawText(Canvas.Handle, PChar(v), Length(v), r, f);
 
@@ -285,7 +336,7 @@ end;
 
 procedure TxnGrid.InvalidateRow(aRow: Integer);
 begin
-  LogString(Format('TxnGrid.InvalidateRow(%d);', [aRow - 1]));
+  LogString(Format('TxnGrid.InvalidateRow(%d);', [aRow]));
 
   inherited InvalidateRow(aRow);
 end;
@@ -294,7 +345,7 @@ procedure TxnGrid.InvalidateColsFrom(aIndex: Integer);
 var
   c: Integer;
 begin
-  LogString(Format('TxnGrid.InvalidateColsFrom(%d);', [aIndex - 1]));
+  LogString(Format('TxnGrid.InvalidateColsFrom(%d);', [aIndex]));
 
   if aIndex >= LeftCol then
     if aIndex <= LeftCol + VisibleColCount - 1 then
@@ -306,7 +357,7 @@ procedure TxnGrid.InvalidateRowsFrom(aIndex: Integer);
 var
   r: Integer;
 begin
-  LogString(Format('TxnGrid.InvalidateRowsFrom(%d);', [aIndex - 1]));
+  LogString(Format('TxnGrid.InvalidateRowsFrom(%d);', [aIndex]));
 
   if aIndex >= TopRow then
     if aIndex <= TopRow + VisibleRowCount - 1 then
@@ -351,7 +402,7 @@ begin
     gekAdd:
       ColCountSet(fColumns.Count + 1);
     gekDel:
-      FixedCols := IfThen(fColumns.Count > 0, 1, 0);
+      FixedCols := 0; // IfThen(fColumns.Count > 0, 1, 0);
     gekEdit:
       ;
     gekMove:
@@ -372,7 +423,7 @@ end;
 
 procedure TxnGrid.NotifyRow(fData: TxnGridNotifyData);
 begin
-  LogString(Format('TxnGrid.Row.%s(%d,%d);', [xnGridEventKindDes(fData.Kind), fData.Row, fData.Col]));
+  LogString(Format('TxnGrid.NotifyRow.%s(%d,%d);', [xnGridEventKindDes(fData.Kind), fData.Row, fData.Col]));
 
   if fLink = nil then
     exit;
@@ -443,14 +494,27 @@ begin
   if fLink = nil then
     exit;
 
-  if aRow - 1 <> fLink.RecNo then
+  if aRow - 1 <> fLink.RecNoGet() then
   begin
-    LogString(Format('TxnGrid.OnSelectCell(%d,%d,%d).Inner', [aCol, aRow, fLink.RecNo]));
-    fLink.RecNo := aRow - 1;
+    LogString(Format('TxnGrid.OnSelectCell(%d,%d,%d).Inner', [aCol, aRow, fLink.RecNoGet()]));
+
+    InvalidateCell(0, Row);
+    InvalidateCell(0, aRow);
+    fLink.RecNoSet(aRow - 1);
   end;
 end;
 
 { TxnGridColumns }
+
+function TxnGridColumns.CaptionGet(aIndex: Integer): string;
+begin
+  if aIndex < 0 then
+    exit('');
+  if aIndex >= Count then
+    exit('');
+
+  Result := TxnGridColumn(inherited GetItem(aIndex)).Caption;
+end;
 
 constructor TxnGridColumns.Create(AOwner: TPersistent; ItemClass: TCollectionItemClass);
 begin

@@ -3,11 +3,12 @@ unit uCommands;
 interface
 
 uses Data.DB,
+xn.grid.link.sample,
   xn.grid.common;
 
 function NewId(): string;
 
-procedure Init(aLink: IxnGridLink; aDataSet: TDataSet);
+procedure Init(aLink: IxnGridLinkCustom<string>; aDataSet: TDataSet);
 
 procedure Append(aValue: string);
 procedure Insert(aValue: string);
@@ -27,7 +28,7 @@ const
   DATASET_NIL = 'Dataset not assigned!';
 
 var
-  fLink: IxnGridLink = nil;
+  fLink: IxnGridLinkCustom<string> = nil;
   fDataSet: TDataSet = nil;
 
   fId: Integer = 0;
@@ -44,7 +45,7 @@ begin
   Assert(fLink <> nil, LINK_NIL);
 end;
 
-procedure Init(aLink: IxnGridLink; aDataSet: TDataSet);
+procedure Init(aLink: IxnGridLinkCustom<string>; aDataSet: TDataSet);
 begin
   fLink := aLink;
   fDataSet := aDataSet;
@@ -102,7 +103,7 @@ end;
 
 procedure Delete;
 begin
-  if fLink.RowCount = 0 then
+  if fLink.RowCount() = 0 then
     Exit;
 
   Asserts;

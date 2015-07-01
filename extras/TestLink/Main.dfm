@@ -434,6 +434,13 @@ object Form1: TForm1
       17
       20)
   end
+  object StringGrid1: TStringGrid
+    Left = 168
+    Top = 537
+    Width = 320
+    Height = 120
+    TabOrder = 18
+  end
   object d0: TDataSource
     DataSet = cds0
     Left = 384

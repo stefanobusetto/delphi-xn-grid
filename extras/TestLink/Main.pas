@@ -52,6 +52,7 @@ type
     Differenze: TLabel;
     Label8: TLabel;
     xnGrid1: TxnGrid;
+    StringGrid1: TStringGrid;
     procedure bt_fillClick(Sender: TObject);
     procedure bt_insertClick(Sender: TObject);
     procedure bt_deleteClick(Sender: TObject);
@@ -71,7 +72,7 @@ type
     procedure log_clearClick(Sender: TObject);
   private
     { Private declarations }
-    link0: IxnGridLink;
+    link0: IxnGridLinkCustom<string>;
   public
     { Public declarations }
   end;
