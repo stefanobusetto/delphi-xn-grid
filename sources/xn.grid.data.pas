@@ -47,7 +47,7 @@ type
     fData: IxnGridData;
     fIndex: TList<integer>;
   public
-    function RowCount: integer; virtual;
+    function RowCountGet: integer; virtual;
     function AsDebug: String; virtual;
     function ValueString(aCol, aRow: integer): String; virtual;
     function ValueFloat(aCol, aRow: integer): Double; virtual;
@@ -114,7 +114,7 @@ begin
     Result := Result + ValueString(0, i) + ',';
 end;
 
-function TxnGridData.RowCount: integer;
+function TxnGridData.RowCountGet: integer;
 begin
   Result := fIndex.Count
 end;
@@ -208,7 +208,7 @@ var
   i: integer;
 begin
   fIndex.Clear;
-  for i := 0 to fData.RowCount - 1 do
+  for i := 0 to fData.RowCountGet - 1 do
     fIndex.Add(i);
 end;
 
@@ -372,7 +372,7 @@ begin
     a[i] := fItems[i].fValue;
 
   fIndex.Clear;
-  for i := 0 to fData.RowCount - 1 do
+  for i := 0 to fData.RowCountGet - 1 do
     if Comparer(a, Getter(i)) = 0 then
       fIndex.Add(i);
 end;

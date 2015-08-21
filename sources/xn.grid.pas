@@ -5,7 +5,7 @@ interface
 uses Generics.Collections,
   Vcl.Styles, Vcl.Controls, Vcl.Grids, Vcl.Themes, Vcl.Graphics, Vcl.GraphUtil, Vcl.ExtCtrls,
   System.SysUtils, System.Classes, System.Math, System.UITypes, Windows,
-  xn.grid.data, xn.grid.common, xn.grid.link.sample;
+  xn.grid.data, xn.grid.common;
 
 type
   TxnGridColumn = class(TCollectionItem)
@@ -50,8 +50,8 @@ type
     function LogGet: TStrings;
     procedure LogString(aString: String);
 
-    procedure NotifyCol(fData: TxnGridNotifyData);
-    procedure NotifyRow(fData: TxnGridNotifyData);
+    procedure NotifyCol(fData: TxnGridLinkNotifyData);
+    procedure NotifyRow(fData: TxnGridLinkNotifyData);
 
     procedure OnSelectCell_(Sender: TObject; aCol, aRow: Integer; var CanSelect: Boolean);
 
@@ -137,7 +137,7 @@ begin
   if fLink = nil then
     RowCountSet(1)
   else
-    RowCountSet(fLink.RowCount());
+    RowCountSet(fLink.RowCountGet);
 
   fColumns.fNotify := NotifyCol;
 end;
@@ -278,7 +278,7 @@ begin
   if fLink = nil then
     s := -1
   else
-    s := fLink.RecNo + 1;
+    s := fLink.RecNoGet + 1;
 
   if aCol = 0 then
     if aRow = 0 then
@@ -381,7 +381,7 @@ begin
   LogString(Format('TxnGrid.LinkSet();', []));
 
   fLink := aValue;
-  fLink.Notify := NotifyRow;
+  fLink.NotifySet(NotifyRow);
 end;
 
 function TxnGrid.LogGet: TStrings;
@@ -394,7 +394,7 @@ begin
   fLog := aValue
 end;
 
-procedure TxnGrid.NotifyCol(fData: TxnGridNotifyData);
+procedure TxnGrid.NotifyCol(fData: TxnGridLinkNotifyData);
 begin
   LogString(Format('TxnGrid.Col.%s(%d);', [xnGridEventKindDes(fData.Kind), fData.Col]));
 
@@ -421,7 +421,7 @@ begin
     Row := aIndex + 1;
 end;
 
-procedure TxnGrid.NotifyRow(fData: TxnGridNotifyData);
+procedure TxnGrid.NotifyRow(fData: TxnGridLinkNotifyData);
 begin
   LogString(Format('TxnGrid.NotifyRow.%s(%d,%d);', [xnGridEventKindDes(fData.Kind), fData.Row, fData.Col]));
 
@@ -431,13 +431,13 @@ begin
   case fData.Kind of
     gekAdd:
       begin
-        RowCountSet(fLink.RowCount + 1);
+        RowCountSet(fLink.RowCountGet + 1);
         InvalidateRowsFrom(fData.Row + 1);
         OnRecNo(fData.Row);
       end;
     gekDel:
       begin
-        RowCountSet(fLink.RowCount + 1);
+        RowCountSet(fLink.RowCountGet + 1);
         InvalidateRowsFrom(fData.Row + 1);
       end;
     gekEdit:

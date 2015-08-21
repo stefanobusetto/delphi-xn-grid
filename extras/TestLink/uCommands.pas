@@ -3,55 +3,73 @@ unit uCommands;
 interface
 
 uses Data.DB,
-xn.grid.link.sample,
+  xn.grid.link.sample,
   xn.grid.common;
 
-function NewId(): string;
+type
+  TxnCommands = class
+  const
+    LINK_NIL = 'Link not assigned!';
+    DATASET_NIL = 'Dataset not assigned!';
 
-procedure Init(aLink: IxnGridLinkCustom<string>; aDataSet: TDataSet);
+  private
+    fLink: IxnGridLinkCustom<string>;
+    fDataSet: TDataSet;
 
-procedure Append(aValue: string);
-procedure Insert(aValue: string);
-procedure Edit(aValue: string);
-procedure Delete;
+    fId: Integer;
 
-function RandCommand: String;
+    procedure Clear;
+    procedure Asserts;
 
-procedure Execute(aCommand: String);
+    procedure DatasetValues(aValue: string);
+  public
+    constructor Create;
+    function NewId(): string;
+
+    procedure Init(aLink: IxnGridLinkCustom<string>; aDataSet: TDataSet);
+
+    procedure First;
+    procedure Prior;
+    procedure Next;
+    procedure Last;
+
+    procedure Append(aValue: string);
+    procedure Insert(aValue: string);
+    procedure Edit(aValue: string);
+    procedure Delete;
+
+    function RandNumber: Integer;
+    function RandCommand: String;
+
+    procedure Execute(aCommand: String);
+  end;
+
+var
+  xnCommands: TxnCommands;
 
 implementation
 
 uses System.SysUtils, System.Math;
 
-const
-  LINK_NIL = 'Link not assigned!';
-  DATASET_NIL = 'Dataset not assigned!';
-
-var
-  fLink: IxnGridLinkCustom<string> = nil;
-  fDataSet: TDataSet = nil;
-
-  fId: Integer = 0;
-
-function NewId(): string;
+function TxnCommands.NewId(): string;
 begin
   Inc(fId);
   Result := IntToStr(fId);
 end;
 
-procedure Asserts;
+procedure TxnCommands.Asserts;
 begin
   Assert(fDataSet <> nil, DATASET_NIL);
   Assert(fLink <> nil, LINK_NIL);
 end;
 
-procedure Init(aLink: IxnGridLinkCustom<string>; aDataSet: TDataSet);
+procedure TxnCommands.Init(aLink: IxnGridLinkCustom<string>; aDataSet: TDataSet);
 begin
   fLink := aLink;
   fDataSet := aDataSet;
 end;
 
-procedure DatasetValues(aValue: string);
+procedure TxnCommands.DatasetValues(aValue: string);
 begin
   Asserts;
   fDataSet.Fields[0].AsString := aValue;
@@ -59,9 +77,9 @@ begin
   fDataSet.Fields[2].AsString := aValue;
 end;
 
-procedure Append(aValue: string);
+procedure TxnCommands.Append(aValue: string);
 begin
-  if fLink.RecNo > 10 then
+  if fLink.RecNoGet > 10 then
     Exit;
 
   Asserts;
@@ -72,47 +90,47 @@ begin
   fDataSet.Post;
 end;
 
-procedure Insert(aValue: string);
+procedure TxnCommands.Insert(aValue: string);
 begin
-  if fLink.RecNo > 10 then
+  if fLink.RecNoGet > 10 then
     Exit;
 
   Asserts;
-  if fLink.RecNo < 0 then
+  if fLink.RecNoGet < 0 then
     fLink.Insert(0, aValue)
   else
-    fLink.Insert(fLink.RecNo, aValue);
+    fLink.Insert(fLink.RecNoGet, aValue);
 
   fDataSet.Insert;
   DatasetValues(aValue);
   fDataSet.Post;
 end;
 
-procedure Edit(aValue: string);
+procedure TxnCommands.Edit(aValue: string);
 begin
-  if fLink.RowCount = 0 then
+  if fLink.RowCountGet = 0 then
     Exit;
 
   Asserts;
-  fLink.Edit(fLink.RecNo, aValue);
+  fLink.Edit(fLink.RecNoGet, aValue);
 
   fDataSet.Edit;
   DatasetValues(aValue);
   fDataSet.Post;
 end;
 
-procedure Delete;
+procedure TxnCommands.Delete;
 begin
-  if fLink.RowCount() = 0 then
+  if fLink.RowCountGet = 0 then
     Exit;
 
   Asserts;
-  fLink.Delete(fLink.RecNo);
+  fLink.Delete(fLink.RecNoGet);
 
   fDataSet.Delete;
 end;
 
-procedure Clear;
+procedure TxnCommands.Clear;
 begin
   Asserts;
 
@@ -122,7 +140,7 @@ begin
     fDataSet.Delete;
 end;
 
-procedure First;
+procedure TxnCommands.First;
 begin
   Asserts;
 
@@ -130,7 +148,7 @@ begin
   fDataSet.First;
 end;
 
-procedure Last;
+procedure TxnCommands.Last;
 begin
   Asserts;
 
@@ -138,7 +156,7 @@ begin
   fDataSet.Last;
 end;
 
-procedure Prior;
+procedure TxnCommands.Prior;
 begin
   Asserts;
 
@@ -146,7 +164,7 @@ begin
   fDataSet.Prior;
 end;
 
-procedure Next;
+procedure TxnCommands.Next;
 begin
   Asserts;
 
@@ -154,13 +172,12 @@ begin
   fDataSet.Next;
 end;
 
-
-function RandNumber: Integer;
+function TxnCommands.RandNumber: Integer;
 begin
   Result := RandomRange(1, 10);
 end;
 
-function RandCommand: String;
+function TxnCommands.RandCommand: String;
 begin
   case RandNumber() of
     1:
@@ -186,7 +203,7 @@ begin
   end;
 end;
 
-procedure Execute(aCommand: String);
+procedure TxnCommands.Execute(aCommand: String);
 begin
   if SameText(aCommand, 'clear') then
     Clear
@@ -209,5 +226,20 @@ begin
   else
     raise Exception.CreateFmt('Invalid command "%s"', [aCommand]);
 end;
+
+constructor TxnCommands.Create;
+begin
+  fLink := nil;
+  fDataSet := nil;
+  fId := 0;
+end;
+
+initialization
+
+xnCommands := TxnCommands.Create;
+
+finalization
+
+xnCommands.Free;
 
 end.

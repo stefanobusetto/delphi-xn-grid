@@ -1,0 +1,124 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{1EDD7D8C-E2CF-40E8-AEA3-E6667C27BDB4}</ProjectGuid>
+        <ProjectVersion>15.4</ProjectVersion>
+        <FrameworkType>VCL</FrameworkType>
+        <MainSource>TestListIndexed.dpr</MainSource>
+        <Base>True</Base>
+        <Config Condition="'$(Config)'==''">Debug</Config>
+        <Platform Condition="'$(Platform)'==''">Win32</Platform>
+        <TargetedPlatforms>1</TargetedPlatforms>
+        <AppType>Application</AppType>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
+        <Base>true</Base>
+    </PropertyGroup>
+    <PropertyGroup Condition="('$(Platform)'=='Win32' and '$(Base)'=='true') or '$(Base_Win32)'!=''">
+        <Base_Win32>true</Base_Win32>
+        <CfgParent>Base</CfgParent>
+        <Base>true</Base>
+    </PropertyGroup>
+    <PropertyGroup Condition="('$(Platform)'=='Win64' and '$(Base)'=='true') or '$(Base_Win64)'!=''">
+        <Base_Win64>true</Base_Win64>
+        <CfgParent>Base</CfgParent>
+        <Base>true</Base>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Config)'=='Debug' or '$(Cfg_1)'!=''">
+        <Cfg_1>true</Cfg_1>
+        <CfgParent>Base</CfgParent>
+        <Base>true</Base>
+    </PropertyGroup>
+    <PropertyGroup Condition="('$(Platform)'=='Win32' and '$(Cfg_1)'=='true') or '$(Cfg_1_Win32)'!=''">
+        <Cfg_1_Win32>true</Cfg_1_Win32>
+        <CfgParent>Cfg_1</CfgParent>
+        <Cfg_1>true</Cfg_1>
+        <Base>true</Base>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Config)'=='Release' or '$(Cfg_2)'!=''">
+        <Cfg_2>true</Cfg_2>
+        <CfgParent>Base</CfgParent>
+        <Base>true</Base>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Base)'!=''">
+        <Icon_MainIcon>$(BDS)\bin\delphi_PROJECTICON.ico</Icon_MainIcon>
+        <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;$(DCC_Namespace)</DCC_Namespace>
+        <SanitizedProjectName>TestListIndexed</SanitizedProjectName>
+        <DCC_DcuOutput>.\$(Platform)\$(Config)</DCC_DcuOutput>
+        <DCC_ExeOutput>.\$(Platform)\$(Config)</DCC_ExeOutput>
+        <DCC_E>false</DCC_E>
+        <DCC_N>false</DCC_N>
+        <DCC_S>false</DCC_S>
+        <DCC_F>false</DCC_F>
+        <DCC_K>false</DCC_K>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Base_Win32)'!=''">
+        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
+        <DCC_UsePackage>SMImportXE6;cxGridRS20;dxFireDACServerModeRS20;gtQRExpD19;FireDACSqliteDriver;cxPageControlRS20;DBXSqliteDriver;FireDACPgDriver;fmx;IndySystem;TeeDB;tethering;inetdbbde;vclib;DBXInterBaseDriver;xnGridDesign;dxmdsRS20;DbxCommonDriver;BarcodeStudio;vclimg;crcontrols200;dxLayoutControlRS20;dbxcds;MetropolisUILiveTile;vcldb;vcldsnap;fmxFireDAC;dacvcl200;cxPivotGridChartRS20;CustomIPTransport;SMExportXE6;vclribbon;cxExportRS20;dsnap;IndyIPServer;dxServerModeRS20;fmxase;vcl;IndyCore;dacfmx200;dxComnRS20;IndyIPCommon;CloudService;FmxTeeUI;FireDACIBDriver;xComponents;dxDBXServerModeRS20;xnGrid;soapserver;inetdbxpress;xComponentsDesign;BarcodeQuickReport;dxADOServerModeRS20;dsnapxml;cxPivotGridRS20;adortl;FireDACASADriver;cxPivotGridOLAPRS20;BarcodeStudioEditors;bindcompfmx;vcldbx;FireDACODBCDriver;RESTBackendComponents;rtl;dbrtl;DbxClientDriver;dclZipForged20;FireDACCommon;bindcomp;inetdb;plandXE6;PKIECtrl20;dac200;Tee;FmxPackage;msprovider200;vclFireDAC;Tee9QR5D18;CPortLibDXE;xComponentsCr;xmlrtl;svnui;ibxpress;ActiveX;vclZipForged20;IndyProtocols;DBXMySQLDriver;FireDACCommonDriver;bindcompdbx;soaprtl;bindengine;vclactnband;FMXTee;TeeUI;bindcompvcl;dxGDIPlusRS20;QR506RunDXE6W64;vclie;unidacvcl200;cxVerticalGridRS20;unidacfmx200;FireDACADSDriver;vcltouch;cxEditorsRS20;unidac200;VclSmp;FireDAC;VCLRESTComponents;ixComponents;DeployAndBackupExpert;gtPDFkitDXE6ProP;dsnapcon;inet;cxLibraryRS20;fmxobj;cxDataRS20;FireDACMySQLDriver;soapmidas;vclx;gtDocEngD20;svn;dxCoreRS20;fmxdae;RESTComponents;bdertl;dxThemeRS20;dbexpress;FireDACMSAccDriver;cxTreeListRS20;IndyIPClient;$(DCC_UsePackage)</DCC_UsePackage>
+        <VerInfo_Locale>1033</VerInfo_Locale>
+        <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
+        <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
+        <DCC_Namespace>Winapi;System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Base_Win64)'!=''">
+        <DCC_UsePackage>cxGridRS20;dxFireDACServerModeRS20;FireDACSqliteDriver;cxPageControlRS20;DBXSqliteDriver;FireDACPgDriver;fmx;IndySystem;TeeDB;tethering;vclib;DBXInterBaseDriver;dxmdsRS20;DbxCommonDriver;vclimg;dxLayoutControlRS20;dbxcds;MetropolisUILiveTile;vcldb;vcldsnap;fmxFireDAC;cxPivotGridChartRS20;CustomIPTransport;vclribbon;cxExportRS20;dsnap;IndyIPServer;dxServerModeRS20;fmxase;vcl;IndyCore;dxComnRS20;IndyIPCommon;CloudService;FmxTeeUI;FireDACIBDriver;xComponents;dxDBXServerModeRS20;soapserver;inetdbxpress;dxADOServerModeRS20;dsnapxml;cxPivotGridRS20;adortl;FireDACASADriver;cxPivotGridOLAPRS20;bindcompfmx;FireDACODBCDriver;RESTBackendComponents;rtl;dbrtl;DbxClientDriver;FireDACCommon;bindcomp;inetdb;plandXE6;PKIECtrl20;Tee;vclFireDAC;Tee9QR5D18;CPortLibDXE;xmlrtl;ibxpress;IndyProtocols;DBXMySQLDriver;FireDACCommonDriver;bindcompdbx;soaprtl;bindengine;vclactnband;FMXTee;TeeUI;bindcompvcl;dxGDIPlusRS20;QR506RunDXE6W64;vclie;cxVerticalGridRS20;FireDACADSDriver;vcltouch;cxEditorsRS20;VclSmp;FireDAC;VCLRESTComponents;dsnapcon;inet;cxLibraryRS20;fmxobj;cxDataRS20;FireDACMySQLDriver;soapmidas;vclx;dxCoreRS20;fmxdae;RESTComponents;dxThemeRS20;dbexpress;FireDACMSAccDriver;cxTreeListRS20;IndyIPClient;$(DCC_UsePackage)</DCC_UsePackage>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Cfg_1)'!=''">
+        <DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
+        <DCC_DebugDCUs>true</DCC_DebugDCUs>
+        <DCC_Optimize>false</DCC_Optimize>
+        <DCC_GenerateStackFrames>true</DCC_GenerateStackFrames>
+        <DCC_DebugInfoInExe>true</DCC_DebugInfoInExe>
+        <DCC_RemoteDebug>true</DCC_RemoteDebug>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
+        <DCC_RemoteDebug>false</DCC_RemoteDebug>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Cfg_2)'!=''">
+        <DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>
+        <DCC_Define>RELEASE;$(DCC_Define)</DCC_Define>
+        <DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
+        <DCC_DebugInformation>0</DCC_DebugInformation>
+    </PropertyGroup>
+    <ItemGroup>
+        <DelphiCompile Include="$(MainSource)">
+            <MainSource>MainSource</MainSource>
+        </DelphiCompile>
+        <DCCReference Include="Main.pas">
+            <Form>Form1</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="..\..\sources\xn.list.pas"/>
+        <DCCReference Include="..\..\sources\xn.grid.data.pas"/>
+        <DCCReference Include="xn.list.indexed.pas"/>
+        <BuildConfiguration Include="Release">
+            <Key>Cfg_2</Key>
+            <CfgParent>Base</CfgParent>
+        </BuildConfiguration>
+        <BuildConfiguration Include="Base">
+            <Key>Base</Key>
+        </BuildConfiguration>
+        <BuildConfiguration Include="Debug">
+            <Key>Cfg_1</Key>
+            <CfgParent>Base</CfgParent>
+        </BuildConfiguration>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Delphi.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Delphi.Personality>
+                <Source>
+                    <Source Name="MainSource">TestListIndexed.dpr</Source>
+                </Source>
+            </Delphi.Personality>
+            <Deployment/>
+            <Platforms>
+                <Platform value="Win32">True</Platform>
+                <Platform value="Win64">False</Platform>
+            </Platforms>
+        </BorlandProject>
+        <ProjectFileVersion>12</ProjectFileVersion>
+    </ProjectExtensions>
+    <Import Project="$(BDS)\Bin\CodeGear.Delphi.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Delphi.Targets')"/>
+    <Import Project="$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj" Condition="Exists('$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj')"/>
+</Project>

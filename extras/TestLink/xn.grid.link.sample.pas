@@ -18,7 +18,8 @@ type
     procedure Insert(aIndex: Integer; aString: string);
     procedure Edit(aIndex: Integer; aString: string);
     procedure Delete(aIndex: Integer);
-
+    procedure LogSet(aValue: TStrings);
+    function LogGet: TStrings;
   end;
 
   TxnGridLinkCustom<T> = class(TInterfacedObject, IxnGridLinkCustom<T>)
@@ -27,16 +28,14 @@ type
     fItems: TList<string>;
     fRecNo: Integer;
     fNotify: TxnGridLinkNotify;
-
-    function RowCount: Integer;
-    function AsDebug: String;
-
+    function RowCountGet: Integer;
     procedure RecNoSet(aIndex: Integer);
     function RecNoGet: Integer;
-
+    procedure NotifySet(aRowEvent: TxnGridLinkNotify);
     procedure LogSet(aValue: TStrings);
     function LogGet: TStrings;
     procedure LogString(aString: String);
+    procedure Move(aIndex: Integer);
   public
     constructor Create;
     destructor Destroy; override;
@@ -45,18 +44,13 @@ type
     procedure Prior;
     procedure Next;
     procedure Clear;
-    procedure Move(aIndex: Integer);
     procedure Append(aString: string);
     procedure Insert(aIndex: Integer; aString: string);
     procedure Edit(aIndex: Integer; aString: string);
     procedure Delete(aIndex: Integer);
 
-    procedure NotifySet(aRowEvent: TxnGridLinkNotify);
-
     function ValueString(aCol, aRow: Integer): String;
     function ValueFloat(aCol, aRow: Integer): Double;
-
-    property Log: TStrings read LogGet write LogSet;
   end;
 
   TxnGridLinkSample = class(TxnGridLinkCustom<string>)
@@ -70,7 +64,7 @@ procedure TxnGridLinkCustom<T>.Append(aString: string);
 begin
   LogString(Format('TxnGridLinkCustom<T>.Append()', []));
 
-  Insert(RowCount, aString);
+  Insert(RowCountGet, aString);
 end;
 
 procedure TxnGridLinkCustom<T>.Insert(aIndex: Integer; aString: string);
@@ -129,7 +123,7 @@ procedure TxnGridLinkCustom<T>.Last;
 var
   r: Integer;
 begin
-  r := RowCount() - 1;
+  r := RowCountGet() - 1;
   LogString(Format('TxnGridLinkCustom<T>.Last(%d)', [r]));
 
   if RecNoGet() < r then
@@ -154,7 +148,7 @@ begin
   r := RecNoGet();
   LogString(Format('TxnGridLinkCustom<T>.Next(%d)', [r + 1]));
 
-  if r < RowCount() - 1 then
+  if r < RowCountGet() - 1 then
     Move(r + 1);
 end;
 
@@ -172,11 +166,6 @@ procedure TxnGridLinkCustom<T>.LogString(aString: String);
 begin
   if fLog <> nil then
     fLog.add(aString);
-end;
-
-function TxnGridLinkCustom<T>.AsDebug: String;
-begin
-  raise Exception.Create('TxnGridLinkCustom<T>.AsDebug not implemented!');
 end;
 
 procedure TxnGridLinkCustom<T>.Clear;
@@ -218,14 +207,14 @@ begin
   if aIndex < 0 then
     aIndex := 0;
 
-  if aIndex > RowCount - 1 then
-    aIndex := RowCount - 1;
+  if aIndex > RowCountGet - 1 then
+    aIndex := RowCountGet - 1;
 
   if fRecNo <> aIndex then
     fRecNo := aIndex;
 end;
 
-function TxnGridLinkCustom<T>.RowCount: Integer;
+function TxnGridLinkCustom<T>.RowCountGet: Integer;
 begin
   Result := fItems.Count;
 end;

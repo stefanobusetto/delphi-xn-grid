@@ -131,7 +131,7 @@ end;
 
 procedure TestTxnGridLinkSampleGridData.Test_RowCount;
 begin
-  CheckEquals(20, fGridDataFilterSort.RowCount);
+  CheckEquals(20, fGridDataFilterSort.RowCountGet);
 end;
 
 procedure TestTxnGridLinkSampleGridData.Test_SeekExpected_0_Found;

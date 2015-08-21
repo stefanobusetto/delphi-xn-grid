@@ -138,8 +138,8 @@ var
   r: Integer;
   c: Integer;
 begin
-  Form1.xnGrid1_RecNo.Caption := Form1.link0.RecNo.ToString();
-  Form1.xnGrid1_RecCount.Caption := Form1.link0.RowCount.ToString();
+  Form1.xnGrid1_RecNo.Caption := Form1.link0.RecNoGet.ToString();
+  Form1.xnGrid1_RecCount.Caption := Form1.link0.RowCountGet.ToString();
   Form1.DbGrid1_RecNo.Caption := Form1.cds0.RecNo.ToString();
   Form1.DbGrid1_RecCount.Caption := Form1.cds0.RecordCount.ToString();
 
@@ -151,25 +151,25 @@ begin
     if c > StrToInt(Form1.DiffMax.Caption) then
       Form1.DiffMax.Caption := c.ToString();
 
-    if c > 3 * Form1.link0.RowCount + 10 then
+    if c > 3 * Form1.link0.RowCountGet + 10 then
       raise Exception.Create('Bitmap compare error.');
   end;
 
   r := Form1.cds0.RecordCount;
-  if r <> Form1.link0.RowCount then
+  if r <> Form1.link0.RowCountGet then
     raise Exception.Create('RecordCount() error.');
 
   if Form1.cds0.RecordCount = 0 then
     r := 0
   else
     r := Form1.cds0.RecNo;
-  if r <> Form1.link0.RecNo + 1 then
+  if r <> Form1.link0.RecNoGet + 1 then
     raise Exception.Create('RecNo() error.');
 end;
 
 procedure ExecuteCommand(aCommand: String);
 begin
-  uCommands.Execute(aCommand);
+  xnCommands.Execute(aCommand);
   Form1.Memo1.Lines.Add('------------------');
   Application.ProcessMessages;
 
@@ -241,7 +241,7 @@ begin
     if i mod 50 = 0 then
       Memo1.Lines.Clear;
 
-    c := RandCommand();
+    c := xnCommands.RandCommand();
     Memo2.Lines.Add(c);
 
     if SameText(c, 'clear') then
@@ -273,7 +273,8 @@ end;
 
 procedure TForm1.FormActivate(Sender: TObject);
 begin
-  uCommands.Init(link0, cds0);
+
+  xnCommands.Init(link0, cds0);
 
   xnGrid1.Link := link0;
   xnGrid1.Log := Memo1.Lines;
@@ -288,13 +289,14 @@ begin
   cds0.Open;
 
   link0 := TxnGridLinkSample.Create;
-  TxnGridLinkSample(link0).Log := Memo1.Lines;
+
+  link0.LogSet(Memo1.Lines);
 end;
 
 procedure TForm1.FormDestroy(Sender: TObject);
 begin
   xnGrid1.Log := nil;
-  TxnGridLinkSample(link0).Log := nil;
+  link0.LogSet(nil);
 end;
 
 procedure TForm1.log_clearClick(Sender: TObject);

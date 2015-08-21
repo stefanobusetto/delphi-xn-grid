@@ -8,12 +8,11 @@ type
   IxnList<T> = interface
     ['{D4CEE49C-1EEE-40BF-A136-C6B074CFA76B}']
     procedure Add(aItem: T);
-    procedure Remove(aItem: T);
+    function Remove(aItem: T): integer;
     procedure Clear;
     function Contains(aItem: T): boolean;
     function IndexOf(aItem: T): integer;
     function Count: integer;
-    function ItemGet(aIndex: integer): T;
     function GetEnumerator: TEnumerator<T>;
     procedure Sort; overload;
     procedure Sort(const aComparer: IComparer<T>); overload;
@@ -21,6 +20,7 @@ type
     procedure Exchange(aIndex1, aIndex2: integer);
     procedure Delete(aIndex: integer);
 
+    function ItemGet(aIndex: integer): T;
     property Items[aIndex: integer]: T read ItemGet; default;
   end;
 
@@ -31,12 +31,11 @@ type
     constructor Create; virtual;
     destructor Destroy; override;
     procedure Add(aItem: T); virtual;
-    procedure Remove(aItem: T); virtual;
+    function Remove(aItem: T): integer; virtual;
     procedure Clear;
     function Contains(aItem: T): boolean; virtual;
     function IndexOf(aItem: T): integer; virtual;
     function Count: integer; virtual;
-    function ItemGet(aIndex: integer): T; virtual;
     function GetEnumerator: TEnumerator<T>;
     procedure Sort; overload; virtual;
     procedure Sort(const aComparer: IComparer<T>); overload; virtual;
@@ -44,6 +43,7 @@ type
     procedure Exchange(aIndex1, aIndex2: integer);
     procedure Delete(aIndex: integer);
 
+    function ItemGet(aIndex: integer): T; virtual;
     property Items[aIndex: integer]: T read ItemGet; default;
   end;
 
@@ -107,9 +107,9 @@ begin
   Result := fItems[aIndex];
 end;
 
-procedure TxnList<T>.Remove(aItem: T);
+function TxnList<T>.Remove(aItem: T): integer;
 begin
-  fItems.Remove(aItem);
+  Result := fItems.Remove(aItem);
 end;
 
 procedure TxnList<T>.Sort;

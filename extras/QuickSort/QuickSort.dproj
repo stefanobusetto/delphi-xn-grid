@@ -95,8 +95,8 @@
         <DCC_RemoteDebug>true</DCC_RemoteDebug>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
-        <VerInfo_Build>10</VerInfo_Build>
-        <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=10.1.1.10;InternalName=FullCoverage;LegalCopyright=;LegalTrademarks=;OriginalFilename=FullCoverage;ProductName=;ProductVersion=10.0.0.0;Comments=</VerInfo_Keys>
+        <VerInfo_Build>17</VerInfo_Build>
+        <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=10.1.1.17;InternalName=FullCoverage;LegalCopyright=;LegalTrademarks=;OriginalFilename=FullCoverage;ProductName=;ProductVersion=10.0.0.0;Comments=</VerInfo_Keys>
         <DCC_DcuOutput>C:\Temp\dcu\Win32</DCC_DcuOutput>
         <DCC_RemoteDebug>false</DCC_RemoteDebug>
     </PropertyGroup>

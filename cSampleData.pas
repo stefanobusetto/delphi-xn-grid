@@ -36,7 +36,7 @@ type
 
   TSampleGridData = class(TInterfacedObject, IxnGridData)
   public
-    function RowCount: Integer;
+    function RowCountGet: Integer;
     function AsDebug: string;
     function ValueString(aCol, aRow: Integer): String;
     function ValueFloat(aCol, aRow: Integer): Double;
@@ -50,7 +50,7 @@ type
   public
     constructor Create(aCount: Integer); virtual;
     destructor Destroy; override;
-    function RowCount: Integer; virtual;
+    function RowCountGet: Integer; virtual;
     function AsDebug: string; virtual;
     function ValueString(aCol, aRow: Integer): String; virtual;
     function ValueFloat(aCol, aRow: Integer): Double; virtual;
@@ -77,7 +77,7 @@ type
   public
     constructor Create;
     destructor Destroy; override;
-    function RowCount: Integer;
+    function RowCountGet: Integer;
     function AsDebug: string;
     function ValueString(aCol, aRow: Integer): String;
     function ValueFloat(aCol, aRow: Integer): Double;
@@ -127,11 +127,11 @@ var
   r: Integer;
 begin
   Result := '';
-  for r := 0 to RowCount - 1 do
+  for r := 0 to RowCountGet - 1 do
     Result := Result + ValueString(0, r) + ','
 end;
 
-function TSampleGridData.RowCount: Integer;
+function TSampleGridData.RowCountGet: Integer;
 begin
   Result := TSampleData.RowCount
 end;
@@ -153,7 +153,7 @@ var
   r: Integer;
 begin
   Result := '';
-  for r := 0 to RowCount - 1 do
+  for r := 0 to RowCountGet - 1 do
     Result := Result + ValueString(0, r) + ','
 end;
 
@@ -184,15 +184,15 @@ var
   a: Integer;
   b: Integer;
 begin
-  for i := 0 to RowCount - 1 do
+  for i := 0 to RowCountGet - 1 do
   begin
-    a := RandomRange(0, RowCount);
-    b := RandomRange(0, RowCount);
+    a := RandomRange(0, RowCountGet);
+    b := RandomRange(0, RowCountGet);
     fItems.Exchange(a, b);
   end;
 end;
 
-function TSampleGridData2By2.RowCount: Integer;
+function TSampleGridData2By2.RowCountGet: Integer;
 begin
   Result := fItems.Count;
 end;
@@ -236,7 +236,7 @@ var
   r: Integer;
 begin
   Result := '';
-  for r := 0 to RowCount - 1 do
+  for r := 0 to RowCountGet - 1 do
     Result := Result + ValueString(0, r) + ','
 end;
 
@@ -261,7 +261,7 @@ begin
   inherited;
 end;
 
-function TSampleGridDataList.RowCount: Integer;
+function TSampleGridDataList.RowCountGet: Integer;
 begin
   Result := fItems.Count;
 end;

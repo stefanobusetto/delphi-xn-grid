@@ -17,7 +17,7 @@ type
     function Seek1(aKeys: TArray<variant>): integer;
     function Seek2(aKeys: TArray<variant>): integer;
 
-    function RowCount: integer; virtual;
+    function RowCountGet: integer; virtual;
     function AsDebug: String; virtual;
     function ValueString(aCol, aRow: integer): String; virtual;
     function ValueFloat(aCol, aRow: integer): Double; virtual;
@@ -48,9 +48,9 @@ begin
   fDataSort.Fill;
 end;
 
-function TxnGridLink.RowCount: integer;
+function TxnGridLink.RowCountGet: integer;
 begin
-  Result := fDataSort.RowCount;
+  Result := fDataSort.RowCountGet;
 end;
 
 function TxnGridLink.Seek1(aKeys: TArray<variant>): integer;
