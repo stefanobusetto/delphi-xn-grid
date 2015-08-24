@@ -37,6 +37,24 @@ begin
   Result := aLeft - aRight;
 end;
 
+function AsDebug(aList: TList<integer>): string; overload;
+var
+  i: integer;
+begin
+  Result := '';
+  for i in aList do
+    Result := Result + i.ToString() + ' ';
+end;
+
+function AsDebug(aList: IxnListIndexed<integer>): string; overload;
+var
+  i: integer;
+begin
+  Result := '';
+  for i in aList do
+    Result := Result + i.ToString() + ' ';
+end;
+
 procedure TForm1.Button1Click(Sender: TObject);
 var
   z: TList<integer>;
@@ -51,47 +69,65 @@ var
   i: integer;
   n: integer;
   r: integer;
+
+  t0: TDateTime;
+  t1: TDateTime;
 begin
   for c := 1 to 1 do
   begin
-    Application.ProcessMessages;
-    Form1.Caption := c.ToString();
+    t0 := Now;
     Application.ProcessMessages;
 
     l := TxnList<integer>.Create;
-    li := TxnListIndexed<integer>.Create(l, TComparer<integer>.Construct(IntegerComparison));
 
     z := TList<integer>.Create;
     try
-      for i := 0 to 250 do
+      // execution time
+      // 100 items = 1ms
+      // 1000 items = 2ms
+      // 10000 items = 25ms
+      // 100000 items = 1031ms
+
+      // add random items
+      for i := 0 to 500 do
       begin
         n := RandomRange(1, 100);
         z.Add(n);
-        li.Add(n);
+        l.Add(n);
+      end;
+
+      // // remove random items
+      for i := 1 to 100 do
+      begin
+        n := RandomRange(1, z.Count);
+        l.Delete(n);
+        z.Delete(n);
       end;
 
       z.Sort(TComparer<integer>.Construct(IntegerComparison));
-
-      r := z.Remove(z.Items[45]);
-
-      zs := '';
-      for i in z do
-        zs := zs + i.ToString() + ' ';
+      zs := AsDebug(z);
       Memo1.Text := zs;
     finally
       z.Free;
     end;
 
-    // li.Fill;
-    // li.Sort;
-    lis := '';
-    for i in li do
-      lis := lis + i.ToString() + ' ';
+    li := TxnListIndexed<integer>.Create(l, TComparer<integer>.Construct(IntegerComparison));
+    l.ObserverRegister(li);
+
+    lis := AsDebug(li);
     Memo2.Text := lis;
 
     if not SameStr(zs, lis) then
       ShowMessage('errore');
+
+    Application.ProcessMessages;
+    t1 := Now;
+    Application.ProcessMessages;
+    Form1.Caption := inttostr(c) + ' elapsed time ' + FormatDateTime('ss:zzz', t1 - t0);
+
+    l.ObserverRegister(nil);
   end;
+
 end;
 
 end.

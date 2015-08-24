@@ -11,14 +11,9 @@ uses
 type
   TxnListIndexedEnumerator<T> = class;
 
-  IxnListIndexed<T> = interface
+  IxnListIndexed<T> = interface(IxnListObserver<T>)
     ['{7F4738B8-A53D-4EEB-AE16-66C97D62E64A}']
-    procedure Add(aItem: T);
-    function Count: integer;
     function GetEnumerator: TxnListIndexedEnumerator<T>;
-    procedure Fill;
-    procedure Sort(aStart, aStop: integer); overload;
-    procedure Sort; overload;
     function Seek1(aItem: T): integer;
     function Seek2(aItem: T): integer;
 
@@ -28,20 +23,21 @@ type
 
   TxnListIndexed<T> = class(TInterfacedObject, IxnListIndexed<T>)
   strict private
-    fList: IxnList<T>;
     fIndex: TList<integer>;
     fComparer: IComparer<T>;
+  private
+    fList: IxnList<T>;
   public
     constructor Create(aList: IxnList<T>; aComparer: IComparer<T>);
     destructor Destroy; override;
-    procedure Add(aItem: T);
-    function Count: integer;
+
     function GetEnumerator: TxnListIndexedEnumerator<T>;
-    procedure Fill;
-    procedure Sort(aStart, aStop: integer); overload;
-    procedure Sort; overload;
     function Seek1(aItem: T): integer;
     function Seek2(aItem: T): integer;
+
+    procedure AfterAdd(aIndex: integer);
+    procedure AfterRemove(aIndex: integer);
+    procedure AfterClear;
 
     function ItemGet(aIndex: integer): T;
     property Items[aIndex: integer]: T read ItemGet; default;
@@ -62,27 +58,34 @@ implementation
 
 { TxnListIndexed<T> }
 
-procedure TxnListIndexed<T>.Add(aItem: T);
+procedure TxnListIndexed<T>.AfterAdd(aIndex: integer);
 var
   s: integer;
-  n: integer;
 begin
-  // posizione nella lista
-  fList.Add(aItem);
-  n := fList.Count - 1;
-
   // posizione nell'indice
-  s := Seek2(fList.Items[n]);
+  s := Seek2(fList.Items[aIndex]);
 
+  // add a indice
   if s < 0 then
-    fIndex.Add(n)
+    fIndex.Add(aIndex)
   else
-    fIndex.Insert(s, n)
+    fIndex.Insert(s, aIndex)
 end;
 
-function TxnListIndexed<T>.Count: integer;
+procedure TxnListIndexed<T>.AfterClear;
 begin
-  Result := fList.Count;
+  fIndex.Clear;
+end;
+
+procedure TxnListIndexed<T>.AfterRemove(aIndex: integer);
+var
+  i: integer;
+begin
+  for i := fIndex.Count - 1 downto 0 do
+    if fIndex[i] > aIndex then
+      fIndex[i] := fIndex[i] - 1
+    else if fIndex[i] = aIndex then
+      fIndex.Delete(i)
 end;
 
 constructor TxnListIndexed<T>.Create(aList: IxnList<T>; aComparer: IComparer<T>);
@@ -97,21 +100,6 @@ destructor TxnListIndexed<T>.Destroy;
 begin
   fIndex.Free;
   inherited;
-end;
-
-procedure TxnListIndexed<T>.Fill;
-var
-  i: integer;
-  a: TArray<variant>;
-begin
-  // SetLength(a, fItems.Count);
-  // for i := 0 to fItems.Count - 1 do
-  // a[i] := fItems[i].fValue;
-
-  fIndex.Clear;
-  for i := 0 to fList.Count - 1 do
-    // if Comparer(a, Getter(i)) = 0 then
-    fIndex.Add(i);
 end;
 
 function TxnListIndexed<T>.GetEnumerator: TxnListIndexedEnumerator<T>;
@@ -212,43 +200,6 @@ begin
     exit(oStart);
 end;
 
-procedure TxnListIndexed<T>.Sort;
-begin
-  if fIndex.Count > 0 then
-    if fList.Count > 0 then
-      Sort(0, fIndex.Count - 1);
-end;
-
-procedure TxnListIndexed<T>.Sort(aStart, aStop: integer);
-var
-  iStart: integer;
-  iStop: integer;
-  iPivot: T;
-begin
-  iStart := aStart;
-  iStop := aStop;
-  iPivot := Items[(iStart + iStop) div 2];
-  repeat
-    while (fComparer.Compare(Items[iStart], iPivot)) < 0 do
-      Inc(iStart);
-    while (fComparer.Compare(Items[iStop], iPivot)) > 0 do
-      Dec(iStop);
-
-    if iStart <= iStop then
-    begin
-      if iStart <> iStop then
-        fIndex.Exchange(iStart, iStop);
-      Inc(iStart);
-      Dec(iStop);
-    end;
-  until iStart > iStop;
-
-  if iStop > aStart then
-    Sort(aStart, iStop);
-  if iStart < aStop then
-    Sort(iStart, aStop);
-end;
-
 { TxnListIndexedEnumerator<T> }
 
 constructor TxnListIndexedEnumerator<T>.Create(aList: TxnListIndexed<T>);
@@ -265,7 +216,7 @@ end;
 
 function TxnListIndexedEnumerator<T>.MoveNext: boolean;
 begin
-  Result := fIndex < fList.Count - 1;
+  Result := fIndex < fList.fList.Count - 1;
   if Result then
     Inc(fIndex);
 end;
