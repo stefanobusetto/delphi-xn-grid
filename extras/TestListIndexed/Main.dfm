@@ -40,4 +40,40 @@ object Form1: TForm1
       'Memo2')
     TabOrder = 2
   end
+  object Button2: TButton
+    Left = 40
+    Top = 96
+    Width = 75
+    Height = 25
+    Caption = 'Button2'
+    TabOrder = 3
+    OnClick = Button2Click
+  end
+  object Memo3: TMemo
+    Left = 646
+    Top = 24
+    Width = 185
+    Height = 641
+    Lines.Strings = (
+      'Memo2')
+    TabOrder = 4
+  end
+  object Button3: TButton
+    Left = 40
+    Top = 152
+    Width = 75
+    Height = 25
+    Caption = 'Button3'
+    TabOrder = 5
+    OnClick = Button3Click
+  end
+  object Button4: TButton
+    Left = 40
+    Top = 296
+    Width = 75
+    Height = 25
+    Caption = 'Button4'
+    TabOrder = 6
+    OnClick = Button4Click
+  end
 end

@@ -21,7 +21,7 @@
         <Projects Include="extras\TestLink\TestLink.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="extras\TestListIndexed\TestListIndexed.dproj">
+        <Projects Include="extras\TestListIndexed\TestListIndex.dproj">
             <Dependencies/>
         </Projects>
     </ItemGroup>
@@ -86,23 +86,23 @@
     <Target Name="TestLink:Make">
         <MSBuild Projects="extras\TestLink\TestLink.dproj" Targets="Make"/>
     </Target>
-    <Target Name="TestListIndexed">
-        <MSBuild Projects="extras\TestListIndexed\TestListIndexed.dproj"/>
+    <Target Name="TestListIndex">
+        <MSBuild Projects="extras\TestListIndexed\TestListIndex.dproj"/>
     </Target>
-    <Target Name="TestListIndexed:Clean">
-        <MSBuild Projects="extras\TestListIndexed\TestListIndexed.dproj" Targets="Clean"/>
+    <Target Name="TestListIndex:Clean">
+        <MSBuild Projects="extras\TestListIndexed\TestListIndex.dproj" Targets="Clean"/>
     </Target>
-    <Target Name="TestListIndexed:Make">
-        <MSBuild Projects="extras\TestListIndexed\TestListIndexed.dproj" Targets="Make"/>
+    <Target Name="TestListIndex:Make">
+        <MSBuild Projects="extras\TestListIndexed\TestListIndex.dproj" Targets="Make"/>
     </Target>
     <Target Name="Build">
-        <CallTarget Targets="SampleData;QuickSort;xnGrid;xnGridDesign;xnGridSortTest;TestLink;TestListIndexed"/>
+        <CallTarget Targets="SampleData;QuickSort;xnGrid;xnGridDesign;xnGridSortTest;TestLink;TestListIndex"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="SampleData:Clean;QuickSort:Clean;xnGrid:Clean;xnGridDesign:Clean;xnGridSortTest:Clean;TestLink:Clean;TestListIndexed:Clean"/>
+        <CallTarget Targets="SampleData:Clean;QuickSort:Clean;xnGrid:Clean;xnGridDesign:Clean;xnGridSortTest:Clean;TestLink:Clean;TestListIndex:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="SampleData:Make;QuickSort:Make;xnGrid:Make;xnGridDesign:Make;xnGridSortTest:Make;TestLink:Make;TestListIndexed:Make"/>
+        <CallTarget Targets="SampleData:Make;QuickSort:Make;xnGrid:Make;xnGridDesign:Make;xnGridSortTest:Make;TestLink:Make;TestListIndex:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>
