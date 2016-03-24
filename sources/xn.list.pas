@@ -82,6 +82,7 @@ end;
 
 destructor TxnList<T>.Destroy;
 begin
+  Clear;
   fItems.Free;
   inherited;
 end;
