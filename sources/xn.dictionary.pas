@@ -9,12 +9,19 @@ type
     ['{4953A5E2-38BD-4898-B85D-7A1157739D6A}']
     procedure Clear;
     procedure Add(const aKey: K; const aValue: V);
+    procedure Remove(const aKey: K);
 
     function Count: integer;
     function ContainsKey(const aKey: K): Boolean;
     function ContainsValue(const aValue: V): Boolean;
 
     function GetEnumerator: TDictionary<K, V>.TPairEnumerator;
+
+    function GetKeys: TEnumerable<K>;
+    property Keys: TEnumerable<K> read GetKeys;
+
+    function GetValues: TEnumerable<V>;
+    property Values: TEnumerable<V> read GetValues;
 
     function GetItem(const aKey: K): V;
     procedure SetItem(const aKey: K; const aValue: V);
@@ -30,12 +37,19 @@ type
 
     procedure Clear;
     procedure Add(const aKey: K; const aValue: V);
+    procedure Remove(const aKey: K);
 
     function Count: integer;
     function ContainsKey(const aKey: K): Boolean;
     function ContainsValue(const aValue: V): Boolean;
 
     function GetEnumerator: TDictionary<K, V>.TPairEnumerator;
+
+    function GetKeys: TEnumerable<K>;
+    property Keys: TEnumerable<K> read GetKeys;
+
+    function GetValues: TEnumerable<V>;
+    property Values: TEnumerable<V> read GetValues;
 
     function GetItem(const aKey: K): V;
     procedure SetItem(const aKey: K; const aValue: V);
@@ -90,6 +104,21 @@ end;
 function TxnDictionary<K, V>.GetItem(const aKey: K): V;
 begin
   Result := fDictionary.Items[aKey]
+end;
+
+function TxnDictionary<K, V>.GetKeys: TEnumerable<K>;
+begin
+  Result := fDictionary.Keys;
+end;
+
+function TxnDictionary<K, V>.GetValues: TEnumerable<V>;
+begin
+  Result := fDictionary.Values;
+end;
+
+procedure TxnDictionary<K, V>.Remove(const aKey: K);
+begin
+  fDictionary.Remove(aKey);
 end;
 
 procedure TxnDictionary<K, V>.SetItem(const aKey: K; const aValue: V);
