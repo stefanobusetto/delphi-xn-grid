@@ -9,7 +9,6 @@ type
     ['{4953A5E2-38BD-4898-B85D-7A1157739D6A}']
     procedure Clear;
     procedure Add(const aKey: K; const aValue: V);
-    procedure Remove(const aKey: K);
 
     function Count: integer;
     function ContainsKey(const aKey: K): Boolean;
@@ -37,7 +36,6 @@ type
 
     procedure Clear;
     procedure Add(const aKey: K; const aValue: V);
-    procedure Remove(const aKey: K);
 
     function Count: integer;
     function ContainsKey(const aKey: K): Boolean;
@@ -106,7 +104,6 @@ begin
   Result := fDictionary.Items[aKey]
 end;
 
-<<<<<<< .mine
 function TxnDictionary<K, V>.GetKeys: TEnumerable<K>;
 begin
   Result := fDictionary.Keys;
@@ -117,23 +114,6 @@ begin
   Result := fDictionary.Values;
 end;
 
-=======
-function TxnDictionary<K, V>.GetKeys: TEnumerable<K>;
-begin
-  Result := fDictionary.Keys;
-end;
-
-function TxnDictionary<K, V>.GetValues: TEnumerable<V>;
-begin
-  Result := fDictionary.Values;
-end;
-
-procedure TxnDictionary<K, V>.Remove(const aKey: K);
-begin
-  fDictionary.Remove(aKey);
-end;
-
->>>>>>> .r48
 procedure TxnDictionary<K, V>.SetItem(const aKey: K; const aValue: V);
 begin
   fDictionary.Items[aKey] := aValue;
