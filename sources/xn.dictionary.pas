@@ -106,6 +106,18 @@ begin
   Result := fDictionary.Items[aKey]
 end;
 
+<<<<<<< .mine
+function TxnDictionary<K, V>.GetKeys: TEnumerable<K>;
+begin
+  Result := fDictionary.Keys;
+end;
+
+function TxnDictionary<K, V>.GetValues: TEnumerable<V>;
+begin
+  Result := fDictionary.Values;
+end;
+
+=======
 function TxnDictionary<K, V>.GetKeys: TEnumerable<K>;
 begin
   Result := fDictionary.Keys;
@@ -121,6 +133,7 @@ begin
   fDictionary.Remove(aKey);
 end;
 
+>>>>>>> .r48
 procedure TxnDictionary<K, V>.SetItem(const aKey: K; const aValue: V);
 begin
   fDictionary.Items[aKey] := aValue;
