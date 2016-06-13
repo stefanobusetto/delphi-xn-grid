@@ -11,8 +11,8 @@ type
     procedure NotifyAdd(aIndex: integer);
     procedure NotifyModify(aIndex: integer);
     procedure NotifyDelete(aIndex: integer);
-    procedure NotifyClear;
-    procedure NotifySort;
+    // procedure NotifyClear;
+    // procedure NotifySort;
   end;
 
   IxnListObserver<T> = interface(IxnList<T>)
@@ -20,8 +20,8 @@ type
     procedure NotifyAdd(aIndex: integer);
     procedure NotifyModify(aIndex: integer);
     procedure NotifyDelete(aIndex: integer);
-    procedure NotifyClear;
-    procedure NotifySort;
+    // procedure NotifyClear;
+    // procedure NotifySort;
 
     procedure ObserverRegister(aObserver: IxnListNotify<T>);
     procedure ObserverUnregister(aObserver: IxnListNotify<T>);
@@ -35,7 +35,7 @@ type
     constructor Create; override;
     destructor Destroy; override;
 
-    procedure Add(aItem: T); override;
+    function Add(aItem: T): integer; override;
     function Remove(aItem: T): integer; override;
     procedure Clear; override;
     procedure Delete(aIndex: integer); override;
@@ -45,8 +45,8 @@ type
     procedure NotifyAdd(aIndex: integer); virtual;
     procedure NotifyModify(aIndex: integer); virtual;
     procedure NotifyDelete(aIndex: integer); virtual;
-    procedure NotifyClear; virtual;
-    procedure NotifySort; virtual;
+    // procedure NotifyClear; virtual;
+    // procedure NotifySort; virtual;
 
     procedure ObserverRegister(aObserver: IxnListNotify<T>); virtual;
     procedure ObserverUnregister(aObserver: IxnListNotify<T>); virtual;
@@ -128,9 +128,9 @@ begin
     ObserverUnregister(fObservers[i]);
 end;
 
-procedure TxnListObserver<T>.Add(aItem: T);
+function TxnListObserver<T>.Add(aItem: T): integer; override;
 begin
-  inherited Add(aItem);
+  result := inherited Add(aItem);
   NotifyAdd(fItems.Count - 1);
 end;
 
@@ -148,8 +148,8 @@ end;
 
 function TxnListObserver<T>.Remove(aItem: T): integer;
 begin
-  Result := inherited Remove(aItem);
-  NotifyDelete(Result);
+  result := inherited Remove(aItem);
+  NotifyDelete(result);
 end;
 
 procedure TxnListObserver<T>.Sort(const aComparer: IComparer<T>);
