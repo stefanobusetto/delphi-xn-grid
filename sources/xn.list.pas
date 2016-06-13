@@ -7,16 +7,18 @@ uses System.Generics.Collections, System.Generics.Defaults;
 type
   IxnList<T> = interface
     ['{D4CEE49C-1EEE-40BF-A136-C6B074CFA76B}']
-    procedure Add(aItem: T);
+    function GetEnumerator: TEnumerator<T>;
+
+    function Add(aItem: T): integer;
     function Remove(aItem: T): integer;
-    procedure Clear;
     procedure Delete(aIndex: integer);
+    procedure Clear;
     procedure Sort; overload;
     procedure Sort(const aComparer: IComparer<T>); overload;
     function IndexOf(aItem: T): integer;
     function Contains(aItem: T): boolean;
     function Count: integer;
-    function GetEnumerator: TEnumerator<T>;
+
     function ItemGet(aIndex: integer): T;
     property Items[aIndex: integer]: T read ItemGet; default;
   end;
@@ -27,16 +29,18 @@ type
   public
     constructor Create; virtual;
     destructor Destroy; override;
-    procedure Add(aItem: T); virtual;
+    function GetEnumerator: TEnumerator<T>;
+
+    function Add(aItem: T): integer; virtual;
     function Remove(aItem: T): integer; virtual;
-    procedure Clear; virtual;
     procedure Delete(aIndex: integer); virtual;
+    procedure Clear; virtual;
     procedure Sort; overload; virtual;
     procedure Sort(const aComparer: IComparer<T>); overload; virtual;
     function IndexOf(aItem: T): integer; virtual;
     function Contains(aItem: T): boolean; virtual;
     function Count: integer; virtual;
-    function GetEnumerator: TEnumerator<T>;
+
     function ItemGet(aIndex: integer): T; virtual;
     property Items[aIndex: integer]: T read ItemGet; default;
   end;
@@ -45,9 +49,9 @@ implementation
 
 { TxnList<T> }
 
-procedure TxnList<T>.Add(aItem: T);
+function TxnList<T>.Add(aItem: T): integer;
 begin
-  fItems.Add(aItem);
+  Result := fItems.Add(aItem);
 end;
 
 function TxnList<T>.Remove(aItem: T): integer;
@@ -82,7 +86,6 @@ end;
 
 destructor TxnList<T>.Destroy;
 begin
-  Clear;
   fItems.Free;
   inherited;
 end;
