@@ -2,10 +2,10 @@ unit xn.list;
 
 interface
 
-uses System.Generics.Collections, System.Generics.Defaults;
+uses System.Generics.Collections, System.Generics.Defaults, xn.Items, xn.types;
 
 type
-  IxnList<T> = interface
+  IxnList<T> = interface(IxnItems<T>)
     ['{D4CEE49C-1EEE-40BF-A136-C6B074CFA76B}']
     function GetEnumerator: TEnumerator<T>;
 
@@ -29,6 +29,7 @@ type
   public
     constructor Create; virtual;
     destructor Destroy; override;
+
     function GetEnumerator: TEnumerator<T>;
 
     function Add(aItem: T): integer; virtual;

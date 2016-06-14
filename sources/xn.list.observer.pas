@@ -3,37 +3,25 @@
 interface
 
 uses System.Generics.Collections, System.Generics.Defaults,
-  xn.list;
+  xn.types, xn.list;
 
 type
-  IxnListNotify<T> = interface
-    ['{A1638A29-DC7B-4832-931D-1F73BA208708}']
-    procedure NotifyAdd(aIndex: integer);
-    procedure NotifyModify(aIndex: integer);
-    procedure NotifyDelete(aIndex: integer);
-    // procedure NotifyClear;
-    // procedure NotifySort;
-  end;
-
-  IxnListObserver<T> = interface(IxnList<T>)
+  IxnListNotify<T> = interface(IxnList<T>)
     ['{0961E04A-751E-4B97-8820-CF20F375F883}']
-    procedure NotifyAdd(aIndex: integer);
-    procedure NotifyModify(aIndex: integer);
-    procedure NotifyDelete(aIndex: integer);
-    // procedure NotifyClear;
-    // procedure NotifySort;
+    procedure Notify(aAction: TxnNotifyAction; aIndex: integer);
 
-    procedure ObserverRegister(aObserver: IxnListNotify<T>);
-    procedure ObserverUnregister(aObserver: IxnListNotify<T>);
-    procedure ObserversUnregister;
+    procedure NotifyRegister(aListObserver: IxnItemsNotify<T>);
+    procedure NotifyUnregister(aListObserver: IxnItemsNotify<T>);
+    procedure NotifyUnregisterAll;
   end;
 
-  TxnListObserver<T> = class(TxnList<T>, IxnListObserver<T>)
+  TxnListNotify<T> = class(TxnList<T>, IxnListNotify<T>)
   strict private
-    fObservers: IxnList<IxnListNotify<T>>;
+    fNotifyList: IxnList<IxnItemsNotify<T>>;
   public
     constructor Create; override;
     destructor Destroy; override;
+    procedure Notify(aAction: TxnNotifyAction; aIndex: integer);
 
     function Add(aItem: T): integer; override;
     function Remove(aItem: T): integer; override;
@@ -42,126 +30,88 @@ type
     procedure Sort; overload; override;
     procedure Sort(const aComparer: IComparer<T>); overload; override;
 
-    procedure NotifyAdd(aIndex: integer); virtual;
-    procedure NotifyModify(aIndex: integer); virtual;
-    procedure NotifyDelete(aIndex: integer); virtual;
-    // procedure NotifyClear; virtual;
-    // procedure NotifySort; virtual;
-
-    procedure ObserverRegister(aObserver: IxnListNotify<T>); virtual;
-    procedure ObserverUnregister(aObserver: IxnListNotify<T>); virtual;
-    procedure ObserversUnregister; virtual;
+    procedure NotifyRegister(aListObserver: IxnItemsNotify<T>); virtual;
+    procedure NotifyUnregister(aListObserver: IxnItemsNotify<T>); virtual;
+    procedure NotifyUnregisterAll; virtual;
   end;
 
 implementation
 
 { TxnListNotify<T> }
 
-constructor TxnListObserver<T>.Create;
+constructor TxnListNotify<T>.Create;
 begin
   inherited;
-  fObservers := TxnList < IxnListNotify < T >>.Create;
+  fNotifyList := TxnList < IxnItemsNotify < T >>.Create;
 end;
 
-destructor TxnListObserver<T>.Destroy;
+destructor TxnListNotify<T>.Destroy;
 begin
   inherited;
 end;
 
-procedure TxnListObserver<T>.NotifyAdd(aIndex: integer);
+procedure TxnListNotify<T>.Notify(aAction: TxnNotifyAction; aIndex: integer);
 var
-  o: IxnListNotify<T>;
+  o: IxnItemsNotify<T>;
 begin
-  for o in fObservers do
-    o.NotifyAdd(aIndex);
+  for o in fNotifyList do
+    o.Notify(aAction, aIndex);
 end;
 
-procedure TxnListObserver<T>.NotifyClear;
-var
-  o: IxnListNotify<T>;
+procedure TxnListNotify<T>.NotifyRegister(aListObserver: IxnItemsNotify<T>);
 begin
-  for o in fObservers do
-    o.NotifyClear;
+  fNotifyList.Add(aListObserver);
+  aListObserver.Notify(naSort, -1);
 end;
 
-procedure TxnListObserver<T>.NotifyDelete(aIndex: integer);
-var
-  o: IxnListNotify<T>;
+procedure TxnListNotify<T>.NotifyUnregister(aListObserver: IxnItemsNotify<T>);
 begin
-  for o in fObservers do
-    o.NotifyDelete(aIndex);
+  aListObserver.Notify(naClear, -1);
+  fNotifyList.Remove(aListObserver);
 end;
 
-procedure TxnListObserver<T>.NotifyModify(aIndex: integer);
-var
-  o: IxnListNotify<T>;
-begin
-  for o in fObservers do
-    o.NotifyModify(aIndex);
-end;
-
-procedure TxnListObserver<T>.NotifySort;
-var
-  o: IxnListNotify<T>;
-begin
-  for o in fObservers do
-    o.NotifySort;
-end;
-
-procedure TxnListObserver<T>.ObserverRegister(aObserver: IxnListNotify<T>);
-begin
-  fObservers.Add(aObserver);
-  aObserver.NotifySort;
-end;
-
-procedure TxnListObserver<T>.ObserverUnregister(aObserver: IxnListNotify<T>);
-begin
-  aObserver.NotifyClear;
-  fObservers.Remove(aObserver);
-end;
-
-procedure TxnListObserver<T>.ObserversUnregister;
+procedure TxnListNotify<T>.NotifyUnregisterAll;
 var
   i: integer;
 begin
-  for i := fObservers.Count - 1 downto 0 do
-    ObserverUnregister(fObservers[i]);
+  for i := fNotifyList.Count - 1 downto 0 do
+    NotifyUnregister(fNotifyList[i]);
 end;
 
-function TxnListObserver<T>.Add(aItem: T): integer; override;
+function TxnListNotify<T>.Add(aItem: T): integer;
 begin
   result := inherited Add(aItem);
-  NotifyAdd(fItems.Count - 1);
+  Notify(naAdd, fItems.Count - 1);
 end;
 
-procedure TxnListObserver<T>.Clear;
+procedure TxnListNotify<T>.Clear;
 begin
   inherited Clear;
-  NotifyClear;
+  Notify(naClear, -1);
 end;
 
-procedure TxnListObserver<T>.Delete(aIndex: integer);
+procedure TxnListNotify<T>.Delete(aIndex: integer);
 begin
   inherited Delete(aIndex);
-  NotifyDelete(aIndex);
+  Notify(naDelete, aIndex);
 end;
 
-function TxnListObserver<T>.Remove(aItem: T): integer;
+function TxnListNotify<T>.Remove(aItem: T): integer;
 begin
   result := inherited Remove(aItem);
-  NotifyDelete(result);
+  Notify(naDelete, result);
 end;
 
-procedure TxnListObserver<T>.Sort(const aComparer: IComparer<T>);
+procedure TxnListNotify<T>.Sort(const aComparer: IComparer<T>);
 begin
   inherited Sort(aComparer);
-  NotifySort;
+  Notify(naSort, -1);
 end;
 
-procedure TxnListObserver<T>.Sort;
+procedure TxnListNotify<T>.Sort;
 begin
   inherited Sort;
-  NotifySort;
+  Notify(naSort, -1);
 end;
 
 end.
