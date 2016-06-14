@@ -2,7 +2,7 @@ unit helpers.myobject;
 
 interface
 
-uses System.Classes, Vcl.Dialogs, Vcl.Forms, xn.list.observer;
+uses System.Classes, Vcl.Dialogs, Vcl.Forms, xn.Types, xn.list.observer;
 
 procedure MyObjectTest(aForm: TForm; aMemo1, aMemo2: TStrings; aCount: integer);
 
@@ -17,7 +17,7 @@ var
   z: IMyObject;
   l2: IxnList<IMyObject>;
   l2s: string;
-  l1: IxnListObserver<IMyObject>;
+  l1: IxnListNotify<IMyObject>;
   i1: IxnListIndex<IMyObject>;
   i1s: string;
   c: integer;
@@ -28,7 +28,7 @@ begin
   for c := 1 to aCount do
   begin
     TimerStart;
-    l1 := TxnListObserver<IMyObject>.Create;
+    l1 := TxnListNotify<IMyObject>.Create;
     l2 := TxnList<IMyObject>.Create;
 
     for i := 0 to 500 do // add
@@ -54,7 +54,7 @@ begin
       n := RandomRange(-50, 150);
       l1.Items[j].Cod := n;
       l2.Items[j].Cod := n;
-      l1.NotifyModify(j);
+      l1.Notify(naModify,  j);
     end;
 
     l2.Sort(TComparer<IMyObject>.Construct(MyObjectComparison));
@@ -80,7 +80,7 @@ begin
     if not SameStr(l2s, i1s) then
       ShowMessage('error !');
 
-    l1.ObserversUnregister;
+    l1.NotifyUnregisterAll;
     TimerStop(aForm, inttostr(c));
   end;
 end;

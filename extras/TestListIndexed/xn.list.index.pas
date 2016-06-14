@@ -6,7 +6,7 @@ uses
   System.SysUtils,
   System.Generics.Collections,
   System.Generics.Defaults,
-  xn.list, xn.list.observer;
+  xn.list, xn.Types, xn.list.observer;
 
 type
   TxnListIndexEnumerator<T> = class;
@@ -27,7 +27,7 @@ type
     function Comparison(const aValue: T): Integer;
   end;
 
-  IxnListIndex<T> = interface(IxnListNotify<T>)
+  IxnListIndex<T> = interface(IxnItemsNotify<T>)
     ['{7F4738B8-A53D-4EEB-AE16-66C97D62E64A}']
     function GetEnumerator: TxnListIndexEnumerator<T>;
     function Seek1(aItem: T): Integer;
@@ -53,9 +53,11 @@ type
     procedure NotifyClear;
     procedure NotifySort;
   public
-    constructor Create(aList: IxnListObserver<T>; aComparer: IComparer<T>);
+    constructor Create(aList: IxnListNotify<T>; aComparer: IComparer<T>);
     destructor Destroy; override;
-    class function ConstructIndex(aList: IxnListObserver<T>; aComparer: IComparer<T>): IxnListIndex<T>;
+    class function ConstructIndex(aList: IxnListNotify<T>; aComparer: IComparer<T>): IxnListIndex<T>;
+
+    procedure Notify(aAction: TxnNotifyAction; aIndex: Integer);
 
     function GetEnumerator: TxnListIndexEnumerator<T>;
     function Seek1(aItem: T): Integer;
@@ -82,6 +84,22 @@ type
 implementation
 
 { TxnListIndex<T> }
+
+procedure TxnListIndex<T>.Notify(aAction: TxnNotifyAction; aIndex: Integer);
+begin
+  case aAction of
+    naAdd:
+      NotifyAdd(aIndex);
+    naModify:
+      NotifyModify(aIndex);
+    naDelete:
+      NotifyDelete(aIndex);
+    naClear:
+      NotifyClear;
+    naSort:
+      NotifySort;
+  end;
+end;
 
 procedure TxnListIndex<T>.NotifyAdd(aIndex: Integer);
 var
@@ -139,7 +157,7 @@ begin
   Result := fIndex.Count
 end;
 
-constructor TxnListIndex<T>.Create(aList: IxnListObserver<T>; aComparer: IComparer<T>);
+constructor TxnListIndex<T>.Create(aList: IxnListNotify<T>; aComparer: IComparer<T>);
 begin
   fList := aList;
   fComparer := aComparer;
@@ -153,10 +171,10 @@ begin
   inherited;
 end;
 
-class function TxnListIndex<T>.ConstructIndex(aList: IxnListObserver<T>; aComparer: IComparer<T>): IxnListIndex<T>;
+class function TxnListIndex<T>.ConstructIndex(aList: IxnListNotify<T>; aComparer: IComparer<T>): IxnListIndex<T>;
 begin
   Result := TxnListIndex<T>.Create(aList, aComparer);
-  aList.ObserverRegister(Result);
+  aList.NotifyRegister(Result);
 end;
 
 function TxnListIndex<T>.GetEnumerator: TxnListIndexEnumerator<T>;

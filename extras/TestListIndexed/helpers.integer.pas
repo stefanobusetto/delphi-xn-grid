@@ -16,7 +16,7 @@ procedure IntegerTest(aForm: TForm; aMemo1, aMemo2: TStrings; aCount: integer);
 var
   l2: IxnList<integer>;
   l2s: string;
-  l1: IxnListObserver<integer>;
+  l1: IxnListNotify<integer>;
   i1: IxnListIndex<integer>;
   i1s: string;
   c: integer;
@@ -27,7 +27,7 @@ begin
   for c := 1 to aCount do
   begin
     TimerStart;
-    l1 := TxnListObserver<integer>.Create;
+    l1 := TxnListNotify<integer>.Create;
     l2 := TxnList<integer>.Create;
 
     for i := 0 to 500 do // add
@@ -65,7 +65,7 @@ begin
     if not SameStr(l2s, i1s) then
       ShowMessage('error !');
 
-    l1.ObserversUnregister;
+    l1.NotifyUnregisterAll;
     TimerStop(aForm, IntToStr(c));
   end;
 end;
