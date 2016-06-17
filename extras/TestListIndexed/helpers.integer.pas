@@ -2,7 +2,7 @@ unit helpers.integer;
 
 interface
 
-uses System.Classes, Vcl.Dialogs, Vcl.Forms, xn.list.observer;
+uses System.Classes, Vcl.Dialogs, Vcl.Forms, xn.list.observable;
 
 procedure IntegerTest(aForm: TForm; aMemo1, aMemo2: TStrings; aCount: integer);
 

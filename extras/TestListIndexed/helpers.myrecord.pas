@@ -2,7 +2,7 @@ unit helpers.myrecord;
 
 interface
 
-uses System.Classes, Vcl.Dialogs, Vcl.Forms, xn.Types, xn.list.observer;
+uses System.Classes, Vcl.Dialogs, Vcl.Forms, xn.Types, xn.list.observable;
 
 procedure MyRecordTest(aForm: TForm; aMemo1, aMemo2: TStrings; aCount: integer);
 

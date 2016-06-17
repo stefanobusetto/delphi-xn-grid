@@ -6,7 +6,7 @@ uses
   System.SysUtils,
   System.Generics.Collections,
   System.Generics.Defaults,
-  xn.list, xn.Types, xn.list.observer;
+  xn.list, xn.Types, xn.list.observable;
 
 type
   TxnListIndexEnumerator<T> = class;
@@ -27,7 +27,7 @@ type
     function Comparison(const aValue: T): Integer;
   end;
 
-  IxnListIndex<T> = interface(IxnItemsNotify<T>)
+  IxnListIndex<T> = interface(IxnItemsNotify)
     ['{7F4738B8-A53D-4EEB-AE16-66C97D62E64A}']
     function GetEnumerator: TxnListIndexEnumerator<T>;
     function Seek1(aItem: T): Integer;

@@ -2,7 +2,7 @@ program TestListIndex;
 
 uses
   Vcl.Forms,
-  Main in 'Main.pas' {Form1} ,
+  Main in 'Main.pas' {Form1},
   xn.list in '..\..\sources\xn.list.pas',
   xn.grid.data in '..\..\sources\xn.grid.data.pas',
   xn.list.index in 'xn.list.index.pas',
@@ -10,7 +10,7 @@ uses
   helpers.integer in 'helpers.integer.pas',
   helpers.myrecord in 'helpers.myrecord.pas',
   helpers.myobject in 'helpers.myobject.pas',
-  xn.list.observer in '..\..\sources\xn.list.observer.pas';
+  xn.list.observable in '..\..\sources\xn.list.observable.pas';
 
 {$R *.res}
 
