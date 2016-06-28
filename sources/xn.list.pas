@@ -2,14 +2,13 @@ unit xn.list;
 
 interface
 
-uses System.Generics.Collections, System.Generics.Defaults, xn.types;
+uses System.Generics.Collections, System.Generics.Defaults, xn.Items;
 
 type
-  IxnList<T> = interface
+  IxnList<T> = interface(IxnItems<T>)
     ['{D4CEE49C-1EEE-40BF-A136-C6B074CFA76B}']
     function GetEnumerator: TEnumerator<T>;
 
-    function Count: integer;
     function Add(aItem: T): integer;
     function Remove(aItem: T): integer;
     procedure Delete(aIndex: integer);
@@ -18,20 +17,14 @@ type
     procedure Sort(const aComparer: IComparer<T>); overload;
     function IndexOf(aItem: T): integer;
     function Contains(aItem: T): boolean;
-
-    function ItemGet(aIndex: integer): T;
-    property Items[aIndex: integer]: T read ItemGet; default;
   end;
 
-  TxnList<T> = class(TInterfacedObject, IxnList<T>)
-  strict protected
-    fItems: TList<T>;
+  TxnList<T> = class(TxnItems<T>, IxnList<T>)
   public
-    constructor Create; virtual;
+    constructor Create; override;
     destructor Destroy; override;
-    function GetEnumerator: TEnumerator<T>; virtual;
+    function GetEnumerator: TEnumerator<T>; override;
 
-    function Count: integer; virtual;
     function Add(aItem: T): integer; virtual;
     function Remove(aItem: T): integer; virtual;
     procedure Delete(aIndex: integer); virtual;
@@ -40,9 +33,6 @@ type
     procedure Sort(const aComparer: IComparer<T>); overload; virtual;
     function IndexOf(aItem: T): integer; virtual;
     function Contains(aItem: T): boolean; virtual;
-
-    function ItemGet(aIndex: integer): T; virtual;
-    property Items[aIndex: integer]: T read ItemGet; default;
   end;
 
 implementation
@@ -52,21 +42,35 @@ implementation
 function TxnList<T>.Add(aItem: T): integer;
 begin
   Result := fItems.Add(aItem);
+//  ObserverNotify(naAdd, Result);
 end;
 
 function TxnList<T>.Remove(aItem: T): integer;
 begin
   Result := fItems.Remove(aItem);
+//  ObserverNotify(naDelete, Result);
 end;
 
 procedure TxnList<T>.Clear;
 begin
   fItems.Clear;
+//  ObserverNotify(naClear, -1);
 end;
 
 procedure TxnList<T>.Delete(aIndex: integer);
 begin
+//  ObserverNotify(naDelete, aIndex);
   fItems.Delete(aIndex);
+end;
+
+constructor TxnList<T>.Create;
+begin
+  inherited;
+end;
+
+destructor TxnList<T>.Destroy;
+begin
+  inherited;
 end;
 
 function TxnList<T>.GetEnumerator: TEnumerator<T>;
@@ -79,40 +83,21 @@ begin
   Result := fItems.Contains(aItem)
 end;
 
-function TxnList<T>.Count: integer;
-begin
-  Result := fItems.Count
-end;
-
-constructor TxnList<T>.Create;
-begin
-  fItems := TList<T>.Create;
-end;
-
-destructor TxnList<T>.Destroy;
-begin
-  fItems.Free;
-  inherited;
-end;
-
 function TxnList<T>.IndexOf(aItem: T): integer;
 begin
   Result := fItems.IndexOf(aItem);
 end;
 
-function TxnList<T>.ItemGet(aIndex: integer): T;
-begin
-  Result := fItems[aIndex];
-end;
-
 procedure TxnList<T>.Sort;
 begin
   fItems.Sort;
+//  ObserverNotify(naFill, -1);
 end;
 
 procedure TxnList<T>.Sort(const aComparer: IComparer<T>);
 begin
   fItems.Sort(aComparer);
+//  ObserverNotify(naFill, -1);
 end;
 
 end.
