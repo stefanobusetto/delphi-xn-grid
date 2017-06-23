@@ -9,14 +9,16 @@ type
     ['{D4CEE49C-1EEE-40BF-A136-C6B074CFA76B}']
     function GetEnumerator: TEnumerator<T>;
 
-    function Add(aItem: T): integer;
-    function Remove(aItem: T): integer;
-    procedure Delete(aIndex: integer);
+    function Add(aItem: T): integer; overload;
+    function Remove(aItem: T): integer; overload;
+    procedure Delete(aIndex: integer); overload;
     procedure Clear;
     procedure Sort; overload;
     procedure Sort(const aComparer: IComparer<T>); overload;
     function IndexOf(aItem: T): integer;
     function Contains(aItem: T): boolean;
+
+    procedure Insert(aIndex: integer; aItem: T);
   end;
 
   TxnList<T> = class(TxnItems<T>, IxnList<T>)
@@ -25,14 +27,16 @@ type
     destructor Destroy; override;
     function GetEnumerator: TEnumerator<T>; override;
 
-    function Add(aItem: T): integer; virtual;
-    function Remove(aItem: T): integer; virtual;
-    procedure Delete(aIndex: integer); virtual;
+    function Add(aItem: T): integer; overload; virtual;
+    function Remove(aItem: T): integer; overload; virtual;
+    procedure Delete(aIndex: integer); overload; virtual;
     procedure Clear; virtual;
     procedure Sort; overload; virtual;
     procedure Sort(const aComparer: IComparer<T>); overload; virtual;
     function IndexOf(aItem: T): integer; virtual;
     function Contains(aItem: T): boolean; virtual;
+
+    procedure Insert(aIndex: integer; aItem: T);
   end;
 
 implementation
@@ -42,24 +46,25 @@ implementation
 function TxnList<T>.Add(aItem: T): integer;
 begin
   Result := fItems.Add(aItem);
-//  ObserverNotify(naAdd, Result);
+
+  // ObserverNotify(naAdd, Result);
 end;
 
 function TxnList<T>.Remove(aItem: T): integer;
 begin
   Result := fItems.Remove(aItem);
-//  ObserverNotify(naDelete, Result);
+  // ObserverNotify(naDelete, Result);
 end;
 
 procedure TxnList<T>.Clear;
 begin
   fItems.Clear;
-//  ObserverNotify(naClear, -1);
+  // ObserverNotify(naClear, -1);
 end;
 
 procedure TxnList<T>.Delete(aIndex: integer);
 begin
-//  ObserverNotify(naDelete, aIndex);
+  // ObserverNotify(naDelete, aIndex);
   fItems.Delete(aIndex);
 end;
 
@@ -88,16 +93,21 @@ begin
   Result := fItems.IndexOf(aItem);
 end;
 
+procedure TxnList<T>.Insert(aIndex: integer; aItem: T);
+begin
+  fItems.Insert(aIndex, aItem);
+end;
+
 procedure TxnList<T>.Sort;
 begin
   fItems.Sort;
-//  ObserverNotify(naFill, -1);
+  // ObserverNotify(naFill, -1);
 end;
 
 procedure TxnList<T>.Sort(const aComparer: IComparer<T>);
 begin
   fItems.Sort(aComparer);
-//  ObserverNotify(naFill, -1);
+  // ObserverNotify(naFill, -1);
 end;
 
 end.
