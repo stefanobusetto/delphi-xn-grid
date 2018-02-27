@@ -33,7 +33,7 @@ implementation
 
 function TxnItems<T>.Count: integer;
 begin
-  Result := fItems.Count   ;
+  Result := fItems.Count;
 end;
 
 constructor TxnItems<T>.Create;

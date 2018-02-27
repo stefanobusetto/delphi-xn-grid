@@ -49,8 +49,8 @@ type
     function GetValues: TEnumerable<V>;
     property Values: TEnumerable<V> read GetValues;
 
-    function GetItem(const aKey: K): V;
-    procedure SetItem(const aKey: K; const aValue: V);
+    function GetItem(const aKey: K): V; virtual;
+    procedure SetItem(const aKey: K; const aValue: V); virtual;
     property Items[const aKey: K]: V read GetItem write SetItem; default;
   end;
 
