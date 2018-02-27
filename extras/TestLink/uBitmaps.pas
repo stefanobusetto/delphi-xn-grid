@@ -5,9 +5,26 @@ interface
 uses Winapi.Windows, Vcl.Graphics, Vcl.Forms, Vcl.Controls, System.Classes, System.Math;
 
 type
-  TBitmapCompareResult = record
-    Bitmap: TBitmap;
-    Count: Integer;
+  IBitmapCompareResult = interface
+    ['{BC211798-7B90-4DF7-A0CB-E5344CD23EF7}']
+    function BitmapGet: TBitmap;
+    property Bitmap: TBitmap read BitmapGet;
+    function CountGet: Integer;
+    property Count: Integer read CountGet;
+  end;
+
+  TBitmapCompareResult = class(TInterfacedObject, IBitmapCompareResult)
+  protected
+    fBitmap: TBitmap;
+    fCount: Integer;
+  public
+    constructor Create;
+    destructor Destroy; override;
+
+    function BitmapGet: TBitmap;
+    property Bitmap: TBitmap read BitmapGet;
+    function CountGet: Integer;
+    property Count: Integer read CountGet;
   end;
 
 function BitmapCrop(aBitmap: TBitmap; const aRect: TRect): TBitmap;
@@ -15,7 +32,7 @@ function BitmapCrop(aBitmap: TBitmap; const aRect: TRect): TBitmap;
 function BitmapControl(aForm: TForm; const aControl: TControl): TBitmap; overload;
 function BitmapControl(aForm: TForm; const aControl: TControl; aBorder: TRect): TBitmap; overload;
 
-function BitmapCompare(aBitmap1, aBitmap2: TBitmap; aThreshold: Integer): TBitmapCompareResult;
+function BitmapCompare(aBitmap1, aBitmap2: TBitmap; aThreshold: Integer): IBitmapCompareResult;
 
 procedure BitmapGrayscale(aBitmap: TBitmap);
 
@@ -105,30 +122,34 @@ begin
   end;
 end;
 
-function BitmapCompare(aBitmap1, aBitmap2: TBitmap; aThreshold: Integer): TBitmapCompareResult;
+function BitmapCompare(aBitmap1, aBitmap2: TBitmap; aThreshold: Integer): IBitmapCompareResult;
 var
   l1: PRGB32Array;
   l2: PRGB32Array;
   X: Integer;
   Y: Integer;
+  r: TBitmapCompareResult;
 begin
-  Result.Count := 0;
+  r := TBitmapCompareResult.Create;
+  Result := r;
 
-  Result.Bitmap := TBitmap.Create;
-  Result.Bitmap.Width := Max(aBitmap1.Width, aBitmap2.Width);
-  Result.Bitmap.Height := Max(aBitmap1.Height, aBitmap2.Height);
+  r.fCount := 0;
 
-  Result.Bitmap.PixelFormat := pf32bit;
+  r.fBitmap := TBitmap.Create;
+  r.fBitmap.Width := Max(aBitmap1.Width, aBitmap2.Width);
+  r.fBitmap.Height := Max(aBitmap1.Height, aBitmap2.Height);
+
+  r.fBitmap.PixelFormat := pf32bit;
 
   // Unione delle bitmap clLime
-  Result.Bitmap.Canvas.Pen.Color := clLime;
-  Result.Bitmap.Canvas.Brush.Color := clLime;
-  Result.Bitmap.Canvas.Rectangle(0, 0, Max(aBitmap1.Width, aBitmap2.Width), Max(aBitmap1.Height, aBitmap2.Height));
+  r.fBitmap.Canvas.Pen.Color := clLime;
+  r.fBitmap.Canvas.Brush.Color := clLime;
+  r.fBitmap.Canvas.Rectangle(0, 0, Max(aBitmap1.Width, aBitmap2.Width), Max(aBitmap1.Height, aBitmap2.Height));
 
   // Intersezione delle bitmap clWhite
-  Result.Bitmap.Canvas.Pen.Color := clWhite;
-  Result.Bitmap.Canvas.Brush.Color := clWhite;
-  Result.Bitmap.Canvas.Rectangle(0, 0, Min(aBitmap1.Width, aBitmap2.Width), Min(aBitmap1.Height, aBitmap2.Height));
+  r.fBitmap.Canvas.Pen.Color := clWhite;
+  r.fBitmap.Canvas.Brush.Color := clWhite;
+  r.fBitmap.Canvas.Rectangle(0, 0, Min(aBitmap1.Width, aBitmap2.Width), Min(aBitmap1.Height, aBitmap2.Height));
 
   // differenze clRed
   for Y := 0 to Min(aBitmap1.Height, aBitmap2.Height) - 1 do
@@ -141,10 +162,33 @@ begin
         or (abs(l1[X].Blue - l2[X].Blue) > aThreshold)
         or (abs(l1[X].Green - l2[X].Green) > aThreshold) then
       begin
-        Result.Count := Result.Count + 1;
-        Result.Bitmap.Canvas.Pixels[X, Y] := clRed
+        r.fCount := r.fCount + 1;
+        r.fBitmap.Canvas.Pixels[X, Y] := clRed
       end;
   end;
+end;
+
+{ TBitmapCompareResult }
+
+function TBitmapCompareResult.BitmapGet: TBitmap;
+begin
+  Result := fBitmap
+end;
+
+function TBitmapCompareResult.CountGet: Integer;
+begin
+  Result := fCount
+end;
+
+constructor TBitmapCompareResult.Create;
+begin
+  fBitmap := nil;
+end;
+
+destructor TBitmapCompareResult.Destroy;
+begin
+  fBitmap.free;
+  inherited;
 end;
 
 end.
