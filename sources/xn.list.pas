@@ -14,14 +14,15 @@ type
     procedure Delete(aIndex: Integer); overload;
     procedure Clear;
 
-    function IndexOf(aItem: T): Integer; overload ;
-    function Contains(aItem: T): boolean; overload ;
+    function IndexOf(aItem: T): Integer; overload;
+    function Contains(aItem: T): boolean; overload;
   end;
 
   IxnList<T> = interface(IxnListCustom<T>)
     ['{D4CEE49C-1EEE-40BF-A136-C6B074CFA76B}']
     procedure Sort; overload;
     procedure Sort(const aComparer: IComparer<T>); overload;
+    procedure Sort(const aComparison: TComparison<T>); overload;
 
     procedure Insert(aIndex: Integer; aItem: T);
   end;
@@ -38,8 +39,10 @@ type
     procedure Clear; virtual;
     procedure Sort; overload; virtual;
     procedure Sort(const aComparer: IComparer<T>); overload; virtual;
-    function IndexOf(aItem: T): Integer; overload ;virtual;
-    function Contains(aItem: T): boolean; overload ;virtual;
+    procedure Sort(const aComparison: TComparison<T>); overload; virtual;
+
+    function IndexOf(aItem: T): Integer; overload; virtual;
+    function Contains(aItem: T): boolean; overload; virtual;
 
     procedure Insert(aIndex: Integer; aItem: T);
   end;
@@ -106,6 +109,11 @@ end;
 procedure TxnList<T>.Sort(const aComparer: IComparer<T>);
 begin
   fItems.Sort(aComparer);
+end;
+
+procedure TxnList<T>.Sort(const aComparison: TComparison<T>);
+begin
+  fItems.Sort(TComparer<T>.Construct(aComparison))
 end;
 
 end.
